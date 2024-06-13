@@ -3,20 +3,22 @@ import cors from "cors";
 import morgan from "morgan";
 
 import globalErrorHandler from "./app/middleware/globalErrorHandler";
-import { testRouter } from "./app/modules/boilerModule/test.route";
+import cookieParser from "cookie-parser";
+import { mainRouter } from "./app/routes/MainRoute";
 
 const app: Application = express();
 
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
+app.use(cookieParser());
 
-// ! rouutes
-app.use("/api", testRouter);
+// ! routes
+app.use("/api", mainRouter);
 
-app.get("/", async (req: Request, res: Response, next: NextFunction) => {
+app.get("/api", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.send({ message: "server is running  !! " });
+    res.send({ message: "Car reservation server is running  !! " });
   } catch (error) {
     next(error);
   }
