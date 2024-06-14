@@ -43,6 +43,12 @@ carSchema.statics.isCarExist = async function (id: string) {
   return carModel.findById(id);
 };
 
+// ! check if user is deleted
+carSchema.statics.isCarDeleted = async function (id: string) {
+  const data = await carModel.findById(id);
+  return data?.isDeleted;
+};
+
 //
 
 export const carModel = model<TCar, TCarModel>("Car", carSchema);

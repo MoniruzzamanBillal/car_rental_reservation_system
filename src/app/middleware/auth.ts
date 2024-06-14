@@ -1,22 +1,25 @@
-import httpStatus from "http-status";
-import AppError from "../Error/AppError";
+import config from "../config";
 import { TUserRole } from "../modules/user/user.interface";
 import catchAsync from "../util/catchAsync";
 import Jwt, { JwtPayload } from "jsonwebtoken";
+import AppError from "../Error/AppError";
+import httpStatus from "http-status";
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req, res, next) => {
-    const token = req.headers.authorization;
+    const header = req.headers.authorization;
 
-    // const decoded = Jwt.verify(token, "secret") as JwtPayload;
+    const token = header?.split(" ")[1];
 
-    // const { role, userId } = decoded;
+    const decoded = Jwt.verify(token, config.jwt_secret) as JwtPayload;
 
-    // if (requiredRoles && !requiredRoles.includes(role)) {
-    //   throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized access !!!");
-    // }
+    const { userRole } = decoded;
 
-    // req.user = decoded;
+    if (requiredRoles && !requiredRoles.includes(userRole)) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized access !!!");
+    }
+
+    req.user = decoded;
     next();
 
     //

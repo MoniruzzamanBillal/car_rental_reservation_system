@@ -1,5 +1,13 @@
+import httpStatus from "http-status";
+import AppError from "../../Error/AppError";
 import { TUser } from "../user/user.interface";
 import { userModel } from "../user/user.model";
+import { Tlogin } from "./auth.interface";
+import { UserRole } from "../user/user.constant";
+import bcrypt from "bcrypt";
+import Jwt from "jsonwebtoken";
+import config from "../../config";
+import { createToken } from "./auth.util";
 
 // ! create user in database
 const createUserIntoDB = async (payload: TUser) => {
@@ -8,7 +16,53 @@ const createUserIntoDB = async (payload: TUser) => {
   return result;
 };
 
+// ! sign in
+const signInFromDb = async (payload: Tlogin) => {
+  const user = await userModel.findOne({ email: payload?.email });
+
+  if (!user) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "User dont exist with this email !!! "
+    );
+  }
+
+  if (user?.role !== UserRole.user) {
+    throw new AppError(httpStatus.BAD_REQUEST, "only user can book a car !!! ");
+  }
+
+  const isPasswordMatch = await bcrypt.compare(
+    payload?.password,
+    user?.password
+  );
+
+  if (!isPasswordMatch) {
+    throw new AppError(httpStatus.FORBIDDEN, "Password don't match !!");
+  }
+
+  const userId = user?._id.toHexString();
+  const userRole = user?.role;
+
+  const jwtPayload = {
+    userId,
+    userRole,
+  };
+
+  const token = createToken(jwtPayload, config.jwt_secret as string, "10d");
+
+  return {
+    user,
+    token,
+  };
+
+  console.log(jwtPayload);
+  // console.log(jwtPayload);
+
+  //
+};
+
 //
 export const authServices = {
   createUserIntoDB,
+  signInFromDb,
 };

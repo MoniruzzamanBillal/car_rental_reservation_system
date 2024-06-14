@@ -15,4 +15,13 @@ router.post(
   carController.craeteCar
 );
 
+// ! get all cars
+router.get("/", carController.getAllCar);
+
+// ! get single car data
+router.get("/:id", carController.getSingleCar);
+
+// ! delete car
+router.patch("/:id", carController.deleteCar);
+
 export const carRouter = router;

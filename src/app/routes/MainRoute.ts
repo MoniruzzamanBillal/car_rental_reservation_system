@@ -1,15 +1,12 @@
 import { Router } from "express";
-import { testRouter } from "../modules/boilerModule/test.route";
+
 import { authRouter } from "../modules/auth/auth.route";
 import { carRouter } from "../modules/car/car.route";
+import { bookingRouter } from "../modules/booking/booking.route";
 
 const router = Router();
 
 const allRoutes = [
-  {
-    path: "/test",
-    route: testRouter,
-  },
   {
     path: "/auth",
     route: authRouter,
@@ -17,6 +14,10 @@ const allRoutes = [
   {
     path: "/cars",
     route: carRouter,
+  },
+  {
+    path: "/bookings",
+    route: bookingRouter,
   },
 ];
 

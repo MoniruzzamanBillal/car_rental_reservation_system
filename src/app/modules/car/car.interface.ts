@@ -13,4 +13,5 @@ export interface TCar {
 
 export interface TCarModel extends Model<TCar> {
   isCarExist(id: string): Promise<TCar>;
+  isCarDeleted(id: string): Promise<TCar>;
 }

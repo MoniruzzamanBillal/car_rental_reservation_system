@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import { TerrorSource, TgenericResponse } from "../interface/error";
 import httpStatus from "http-status";
 
