@@ -1,6 +1,6 @@
 import { FilterQuery, Query } from "mongoose";
 
-class Queryuilder<T> {
+class QueryBuilder<T> {
   public queryModel: Query<T[], T>;
   public query: Record<string, unknown>;
 
@@ -75,4 +75,4 @@ class Queryuilder<T> {
   //
 }
 
-export default Queryuilder;
+export default QueryBuilder;

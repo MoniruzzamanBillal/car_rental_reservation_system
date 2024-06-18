@@ -15,4 +15,7 @@ router.post(
   bookingController.createBooking
 );
 
+//  ! get all booking
+router.get("/", bookingController.getAllBooking);
+
 export const bookingRouter = router;

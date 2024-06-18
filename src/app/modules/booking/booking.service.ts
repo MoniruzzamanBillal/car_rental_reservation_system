@@ -2,10 +2,11 @@ import httpStatus from "http-status";
 import AppError from "../../Error/AppError";
 import { userModel } from "../user/user.model";
 import { TBooking } from "./booking.interface";
-import mongoose, { Types, mongo } from "mongoose";
+import mongoose from "mongoose";
 import { carModel } from "../car/car.model";
 import { CarStatus } from "../car/car.constant";
 import { bookingModel } from "./booking.model";
+import QueryBuilder from "../../builder/Queryuilder";
 
 // ! creating a booking in database
 const createBookInDb = async (payload: Partial<TBooking>) => {
@@ -71,7 +72,19 @@ const createBookInDb = async (payload: Partial<TBooking>) => {
   return null;
 };
 
+// ! get all booking (admin access)
+const getAllBookingFromDb = async (query: Record<string, unknown>) => {
+  const bookingQuery = new QueryBuilder(bookingModel.find(), query)
+    .filter()
+    .sort();
+
+  const result = await bookingQuery.queryModel.populate("user").populate("car");
+
+  return result;
+};
+
 //
 export const bookServices = {
   createBookInDb,
+  getAllBookingFromDb,
 };
