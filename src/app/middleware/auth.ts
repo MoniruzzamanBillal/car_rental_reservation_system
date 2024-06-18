@@ -9,9 +9,19 @@ const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req, res, next) => {
     const header = req.headers.authorization;
 
+    if (!header) {
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        "Authorization header missing or malformed"
+      );
+    }
+
     const token = header?.split(" ")[1];
 
-    const decoded = Jwt.verify(token, config.jwt_secret) as JwtPayload;
+    const decoded = Jwt.verify(
+      token,
+      config.jwt_secret as string
+    ) as JwtPayload;
 
     const { userRole } = decoded;
 
@@ -20,6 +30,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     }
 
     req.user = decoded;
+
     next();
 
     //

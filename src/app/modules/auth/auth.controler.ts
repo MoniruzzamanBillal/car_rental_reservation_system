@@ -16,11 +16,7 @@ const createUser = catchAsync(async (req, res) => {
 
 // ! signin
 const signIn = catchAsync(async (req, res) => {
-  console.log("sign in  route !! ");
-
   const result = await authServices.signInFromDb(req.body);
-
-  console.log(result);
 
   const { token, user } = result;
 

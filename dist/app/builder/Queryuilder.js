@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class Queryuilder {
+class QueryBuilder {
     constructor(queryModel, query) {
         this.queryModel = queryModel;
         this.query = query;
@@ -56,4 +56,4 @@ class Queryuilder {
         return this;
     }
 }
-exports.default = Queryuilder;
+exports.default = QueryBuilder;

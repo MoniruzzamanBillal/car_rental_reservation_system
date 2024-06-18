@@ -52,6 +52,13 @@ userSchema.pre("save", function (next) {
         next();
     });
 });
+// ! send password empty in response
+userSchema.post("save", function (doc, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        doc.password = "";
+        next();
+    });
+});
 // ! statics to check if user exists in database
 userSchema.statics.isUserExistsById = function (id) {
     return __awaiter(this, void 0, void 0, function* () {

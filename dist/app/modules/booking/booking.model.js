@@ -23,7 +23,7 @@ const bookingSchema = new mongoose_1.Schema({
     },
     endTime: {
         type: String,
-        required: true,
+        default: null,
     },
     totalCost: {
         type: Number,

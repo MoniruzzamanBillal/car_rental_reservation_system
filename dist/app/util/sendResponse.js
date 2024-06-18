@@ -6,6 +6,7 @@ const sendResponse = (res, data) => {
         statusCode: data.statusCode,
         message: data.message,
         data: data.data,
+        token: data.token,
     });
 };
 exports.default = sendResponse;

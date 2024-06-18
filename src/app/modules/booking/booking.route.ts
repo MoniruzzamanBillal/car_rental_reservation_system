@@ -18,4 +18,7 @@ router.post(
 //  ! get all booking
 router.get("/", auth(UserRole.admin), bookingController.getAllBooking);
 
+// ! get user's booking
+router.get("/my-bookings", auth(UserRole.user), bookingController.getBooking);
+
 export const bookingRouter = router;

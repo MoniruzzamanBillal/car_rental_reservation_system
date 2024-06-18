@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookingValidation = void 0;
-const mongoose_1 = require("mongoose");
 const zod_1 = require("zod");
 const validDate = zod_1.z.string().refine((val) => {
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -18,11 +17,6 @@ const timeStringSchema = zod_1.z.string().refine((time) => {
 const createBookSchema = zod_1.z.object({
     body: zod_1.z.object({
         date: validDate,
-        car: zod_1.z
-            .instanceof(mongoose_1.Types.ObjectId)
-            .refine((val) => mongoose_1.Types.ObjectId.isValid(val), {
-            message: "Invalid ObjectId",
-        }),
         startTime: timeStringSchema,
     }),
 });

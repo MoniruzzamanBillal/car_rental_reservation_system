@@ -26,7 +26,30 @@ const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+// ! signin
+const signIn = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("sign in  route !! ");
+    const result = yield auth_service_1.authServices.signInFromDb(req.body);
+    console.log(result);
+    const { token, user } = result;
+    const modifiedToken = `Bearer ${token}`;
+    const userObject = user.toObject();
+    delete userObject.password;
+    res.cookie("token", modifiedToken, {
+        secure: false,
+        httpOnly: false,
+    });
+    const data = Object.assign({}, userObject);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "User logged in successfully ",
+        data: data,
+        token: token,
+    });
+}));
 //
 exports.authController = {
     createUser,
+    signIn,
 };

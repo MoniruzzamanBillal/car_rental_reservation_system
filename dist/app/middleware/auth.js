@@ -12,16 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const config_1 = __importDefault(require("../config"));
 const catchAsync_1 = __importDefault(require("../util/catchAsync"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const AppError_1 = __importDefault(require("../Error/AppError"));
+const http_status_1 = __importDefault(require("http-status"));
 const auth = (...requiredRoles) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        const token = req.headers.authorization;
-        // const decoded = Jwt.verify(token, "secret") as JwtPayload;
-        // const { role, userId } = decoded;
-        // if (requiredRoles && !requiredRoles.includes(role)) {
-        //   throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized access !!!");
-        // }
-        // req.user = decoded;
+        const header = req.headers.authorization;
+        if (!header) {
+            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Authorization header missing or malformed");
+        }
+        const token = header === null || header === void 0 ? void 0 : header.split(" ")[1];
+        const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_secret);
+        const { userRole } = decoded;
+        if (requiredRoles && !requiredRoles.includes(userRole)) {
+            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Unauthorized access !!!");
+        }
+        req.user = decoded;
         next();
         //
     }));

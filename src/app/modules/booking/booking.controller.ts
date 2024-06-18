@@ -1,3 +1,4 @@
+import NoDataFound from "../../util/NoDataFound";
 import catchAsync from "../../util/catchAsync";
 import sendResponse from "../../util/sendResponse";
 import { bookServices } from "./booking.service";
@@ -24,14 +25,24 @@ const createBooking = catchAsync(async (req, res) => {
 const getAllBooking = catchAsync(async (req, res) => {
   const result = await bookServices.getAllBookingFromDb(req.query);
 
+  // ! if no data found
   if (result.length <= 0) {
-    return sendResponse(res, {
-      statusCode: 404,
-      success: false,
-      message: "No Data Found",
-      data: result,
-    });
+    return NoDataFound(res);
   }
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Bookings retrieved successfully",
+    data: result,
+  });
+});
+
+//  ! get user booking
+const getBooking = catchAsync(async (req, res) => {
+  // console.log(req.user);
+
+  const result = await bookServices.getUserBookingFromDb(req.user.userId);
 
   sendResponse(res, {
     statusCode: 200,
@@ -45,4 +56,5 @@ const getAllBooking = catchAsync(async (req, res) => {
 export const bookingController = {
   createBooking,
   getAllBooking,
+  getBooking,
 };

@@ -57,19 +57,24 @@ const createBookInDb = async (payload: Partial<TBooking>) => {
       { new: true }
     );
 
-    const data = await bookingModel.create(requiredData);
+    const createdBooking = await bookingModel.create(requiredData);
+
+    await createdBooking.populate({
+      path: "user",
+      select: " -password -createdAt -updatedAt -__v ",
+    });
+
+    await createdBooking.populate("car");
 
     await session.commitTransaction();
     await session.endSession();
 
-    return data;
+    return createdBooking;
   } catch (error: any) {
     await session.abortTransaction();
     await session.endSession();
     throw new Error(error);
   }
-
-  return null;
 };
 
 // ! get all booking (admin access)
@@ -95,8 +100,22 @@ const getAllBookingFromDb = async (query: Record<string, unknown>) => {
   return result;
 };
 
+// ! get user's booking
+const getUserBookingFromDb = async (id: string) => {
+  const result = await bookingModel
+    .find({ user: id })
+    .populate({
+      path: "user",
+      select: " -password -createdAt -updatedAt -__v ",
+    })
+    .populate("car");
+
+  return result;
+};
+
 //
 export const bookServices = {
   createBookInDb,
   getAllBookingFromDb,
+  getUserBookingFromDb,
 };

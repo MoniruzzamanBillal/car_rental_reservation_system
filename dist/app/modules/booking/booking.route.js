@@ -13,4 +13,6 @@ const booking_controller_1 = require("./booking.controller");
 const router = (0, express_1.Router)();
 // ! create booking
 router.post("/", (0, auth_1.default)(user_constant_1.UserRole.user), (0, validateRequest_1.default)(booking_validation_1.bookingValidation.createBookSchema), booking_controller_1.bookingController.createBooking);
+//  ! get all booking
+router.get("/", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllBooking);
 exports.bookingRouter = router;

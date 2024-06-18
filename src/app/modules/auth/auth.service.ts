@@ -3,7 +3,6 @@ import AppError from "../../Error/AppError";
 import { TUser } from "../user/user.interface";
 import { userModel } from "../user/user.model";
 import { Tlogin } from "./auth.interface";
-import { UserRole } from "../user/user.constant";
 import bcrypt from "bcrypt";
 import config from "../../config";
 import { createToken } from "./auth.util";
