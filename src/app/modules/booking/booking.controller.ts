@@ -25,7 +25,7 @@ const getAllBooking = catchAsync(async (req, res) => {
   const result = await bookServices.getAllBookingFromDb(req.query);
 
   if (result.length <= 0) {
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 404,
       success: false,
       message: "No Data Found",

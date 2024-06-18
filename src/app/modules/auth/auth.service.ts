@@ -5,7 +5,6 @@ import { userModel } from "../user/user.model";
 import { Tlogin } from "./auth.interface";
 import { UserRole } from "../user/user.constant";
 import bcrypt from "bcrypt";
-import Jwt from "jsonwebtoken";
 import config from "../../config";
 import { createToken } from "./auth.util";
 
@@ -23,12 +22,8 @@ const signInFromDb = async (payload: Tlogin) => {
   if (!user) {
     throw new AppError(
       httpStatus.NOT_FOUND,
-      "User dont exist with this email !!! "
+      "User dont exist with this email !!!"
     );
-  }
-
-  if (user?.role !== UserRole.user) {
-    throw new AppError(httpStatus.BAD_REQUEST, "only user can book a car !!! ");
   }
 
   const isPasswordMatch = await bcrypt.compare(
@@ -54,9 +49,6 @@ const signInFromDb = async (payload: Tlogin) => {
     user,
     token,
   };
-
-  console.log(jwtPayload);
-  // console.log(jwtPayload);
 
   //
 };

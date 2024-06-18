@@ -74,11 +74,23 @@ const createBookInDb = async (payload: Partial<TBooking>) => {
 
 // ! get all booking (admin access)
 const getAllBookingFromDb = async (query: Record<string, unknown>) => {
-  const bookingQuery = new QueryBuilder(bookingModel.find(), query)
+  const modifiedQuery = { ...query };
+
+  if (modifiedQuery?.carId) {
+    modifiedQuery.car = modifiedQuery?.carId;
+    delete modifiedQuery?.carId;
+  }
+
+  const bookingQuery = new QueryBuilder(bookingModel.find(), modifiedQuery)
     .filter()
     .sort();
 
-  const result = await bookingQuery.queryModel.populate("user").populate("car");
+  const result = await bookingQuery.queryModel
+    .populate({
+      path: "user",
+      select: "-password -createdAt  -updatedAt -__v ",
+    })
+    .populate("car");
 
   return result;
 };

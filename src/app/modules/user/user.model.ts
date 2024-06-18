@@ -47,6 +47,13 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// ! send password empty in response
+userSchema.post("save", async function (doc, next) {
+  doc.password = "";
+
+  next();
+});
+
 // ! statics to check if user exists in database
 userSchema.statics.isUserExistsById = async function (id: string) {
   return await userModel.findById(id);

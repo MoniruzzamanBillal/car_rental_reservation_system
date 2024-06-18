@@ -11,7 +11,6 @@ const router = Router();
 // ! signup new user
 router.post(
   "/signup",
-  auth(UserRole.user),
   validateRequest(userValidations.createUserValidationSchema),
   authController.createUser
 );

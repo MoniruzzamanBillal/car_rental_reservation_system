@@ -16,24 +16,34 @@ const createUser = catchAsync(async (req, res) => {
 
 // ! signin
 const signIn = catchAsync(async (req, res) => {
+  console.log("sign in  route !! ");
+
   const result = await authServices.signInFromDb(req.body);
 
-  const { token } = result;
+  console.log(result);
+
+  const { token, user } = result;
 
   const modifiedToken = `Bearer ${token}`;
 
-  console.log(modifiedToken);
+  const userObject = user.toObject() as any;
+  delete userObject.password;
 
   res.cookie("token", modifiedToken, {
     secure: false,
     httpOnly: false,
   });
 
+  const data = {
+    ...userObject,
+  };
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "User logged in successfully ",
-    data: result,
+    data: data,
+    token: token,
   });
 });
 
