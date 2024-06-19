@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 
 const validDate = z.string().refine(
   (val) => {
@@ -27,6 +27,14 @@ const createBookSchema = z.object({
   }),
 });
 
+const returnBookSchema = z.object({
+  body: z.object({
+    bookingId: z.string(),
+    endTime: timeStringSchema,
+  }),
+});
+
 export const bookingValidation = {
   createBookSchema,
+  returnBookSchema,
 };

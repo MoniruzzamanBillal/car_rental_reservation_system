@@ -9,3 +9,8 @@ export interface TBooking {
   endTime: string | null;
   totalCost: number;
 }
+
+export interface TReturnCar {
+  bookingId: string;
+  endTime: string;
+}

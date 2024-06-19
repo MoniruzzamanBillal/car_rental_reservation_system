@@ -49,5 +49,27 @@ const deleteCar = catchAsync(async (req, res) => {
   });
 });
 
+// ! return book car
+const returnBookCar = catchAsync(async (req, res) => {
+  const result = await carServices.returnBookedCar(req.body);
+
+  // if (result.length <= 0) {
+  //   return NoDataFound(res);
+  // }
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Car returned successfully",
+    data: "result",
+  });
+});
+
 //
-export const carController = { craeteCar, getAllCar, getSingleCar, deleteCar };
+export const carController = {
+  craeteCar,
+  getAllCar,
+  getSingleCar,
+  deleteCar,
+  returnBookCar,
+};

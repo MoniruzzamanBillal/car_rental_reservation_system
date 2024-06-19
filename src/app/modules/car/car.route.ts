@@ -4,6 +4,7 @@ import { UserRole } from "../user/user.constant";
 import validateRequest from "../../middleware/validateRequest";
 import { carValidations } from "./car.validation";
 import { carController } from "./car.controller";
+import { bookingValidation } from "../booking/booking.validation";
 
 const router = Router();
 
@@ -23,5 +24,12 @@ router.get("/:id", carController.getSingleCar);
 
 // ! delete car
 router.patch("/:id", carController.deleteCar);
+
+// ! return booking car
+router.put(
+  "/return",
+  validateRequest(bookingValidation.returnBookSchema),
+  carController.returnBookCar
+);
 
 export const carRouter = router;

@@ -40,9 +40,11 @@ const getAllBooking = catchAsync(async (req, res) => {
 
 //  ! get user booking
 const getBooking = catchAsync(async (req, res) => {
-  // console.log(req.user);
-
   const result = await bookServices.getUserBookingFromDb(req.user.userId);
+
+  if (result.length <= 0) {
+    return NoDataFound(res);
+  }
 
   sendResponse(res, {
     statusCode: 200,
