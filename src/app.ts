@@ -7,7 +7,7 @@ import cookieParser from "cookie-parser";
 import { mainRouter } from "./app/routes/MainRoute";
 
 const app: Application = express();
-
+//  ! middleware
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
@@ -16,7 +16,7 @@ app.use(cookieParser());
 // ! routes
 app.use("/api", mainRouter);
 
-app.get("/api", async (req: Request, res: Response, next: NextFunction) => {
+app.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.send({ message: "Car reservation server is running  !! " });
   } catch (error) {
@@ -24,8 +24,11 @@ app.get("/api", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+// ! not found route
 app.all("*", async (req: Request, res: Response) => {
-  res.status(400).json({ success: false, message: "Route not found " });
+  res
+    .status(404)
+    .json({ success: false, statusCode: 404, message: "Not Found" });
 });
 
 //! global error handler
