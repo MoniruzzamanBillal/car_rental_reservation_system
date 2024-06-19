@@ -8,6 +8,7 @@ import { userModel } from "../user/user.model";
 import { convertMinutes } from "./car.util";
 import mongoose from "mongoose";
 import { CarStatus } from "./car.constant";
+import { path } from "path";
 
 // ! create car in database
 const createCarIntoDB = async (payload: TCar) => {
@@ -62,8 +63,6 @@ const returnBookedCar = async (payload: TReturnCar) => {
 
   const bookingResult = await bookingModel.findById(bookingId);
 
-  console.log(bookingResult);
-
   // ! check if booking is exist
   if (!bookingResult) {
     throw new AppError(httpStatus.BAD_REQUEST, "This Booking not exist");
@@ -86,7 +85,7 @@ const returnBookedCar = async (payload: TReturnCar) => {
   if (car.isDeleted) {
     throw new AppError(httpStatus.NOT_FOUND, "This car is deleted ");
   }
-  console.log(car);
+
   const { pricePerHour } = car;
 
   const startMinutes = convertMinutes(startTime);
@@ -116,8 +115,25 @@ const returnBookedCar = async (payload: TReturnCar) => {
       { new: true, upsert: true, session }
     );
 
+    // ! update end time and total cost
+    const result = await bookingModel
+      .findByIdAndUpdate(
+        bookingId,
+        {
+          endTime,
+          totalCost,
+        },
+        { new: true, upsert: true, session }
+      )
+      .populate({
+        path: "user",
+        select: " -password -createdAt -updatedAt -__v  ",
+      })
+      .populate("car");
+
     await session.commitTransaction();
     await session.endSession();
+    return result;
   } catch (error: any) {
     await session.abortTransaction();
     await session.endSession();

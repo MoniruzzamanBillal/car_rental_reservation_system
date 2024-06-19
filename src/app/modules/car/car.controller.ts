@@ -1,3 +1,4 @@
+import NoDataFound from "../../util/NoDataFound";
 import catchAsync from "../../util/catchAsync";
 import sendResponse from "../../util/sendResponse";
 import { carServices } from "./car.service";
@@ -53,7 +54,7 @@ const deleteCar = catchAsync(async (req, res) => {
 const returnBookCar = catchAsync(async (req, res) => {
   const result = await carServices.returnBookedCar(req.body);
 
-  // if (result.length <= 0) {
+  // if (!result) {
   //   return NoDataFound(res);
   // }
 
@@ -61,7 +62,7 @@ const returnBookCar = catchAsync(async (req, res) => {
     statusCode: 200,
     success: true,
     message: "Car returned successfully",
-    data: "result",
+    data: result,
   });
 });
 
