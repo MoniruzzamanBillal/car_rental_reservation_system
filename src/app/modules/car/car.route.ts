@@ -25,7 +25,7 @@ router.get("/:id", carController.getSingleCar);
 // ! delete car
 router.delete("/:id", carController.deleteCar);
 
-router.put("/:id", carController.updateCar);
+router.put("/:id", auth(UserRole.admin), carController.updateCar);
 
 // ! return booking car
 router.put(
