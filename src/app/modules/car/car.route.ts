@@ -23,7 +23,9 @@ router.get("/", carController.getAllCar);
 router.get("/:id", carController.getSingleCar);
 
 // ! delete car
-router.patch("/:id", carController.deleteCar);
+router.delete("/:id", carController.deleteCar);
+
+router.put("/:id", carController.updateCar);
 
 // ! return booking car
 router.put(

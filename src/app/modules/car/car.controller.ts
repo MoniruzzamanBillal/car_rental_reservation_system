@@ -50,13 +50,28 @@ const deleteCar = catchAsync(async (req, res) => {
   });
 });
 
+//  ! update car
+const updateCar = catchAsync(async (req, res) => {
+  const result = await carServices.updateCarFromDatabase(
+    req.params.id,
+    req.body
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Car updated  successfully",
+    data: result,
+  });
+});
+
 // ! return book car
 const returnBookCar = catchAsync(async (req, res) => {
   const result = await carServices.returnBookedCar(req.body);
 
-  // if (!result) {
-  //   return NoDataFound(res);
-  // }
+  if (!result) {
+    return NoDataFound(res);
+  }
 
   sendResponse(res, {
     statusCode: 200,
@@ -73,4 +88,5 @@ export const carController = {
   getSingleCar,
   deleteCar,
   returnBookCar,
+  updateCar,
 };

@@ -8,7 +8,6 @@ import { userModel } from "../user/user.model";
 import { convertMinutes } from "./car.util";
 import mongoose from "mongoose";
 import { CarStatus } from "./car.constant";
-import { path } from "path";
 
 // ! create car in database
 const createCarIntoDB = async (payload: TCar) => {
@@ -32,6 +31,50 @@ const getSingleCarFromDb = async (id: string) => {
   const result = await carModel.findById(id);
 
   return result;
+};
+
+// ! updating car from database
+const updateCarFromDatabase = async (id: string, payload: Partial<TCar>) => {
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const { features, ...remainingData } = payload;
+
+    const modifiedData: Record<string, unknown> = {
+      ...remainingData,
+    };
+
+    //  * update car feature
+    if (features && features.length) {
+      await carModel.findByIdAndUpdate(
+        id,
+        {
+          $addToSet: {
+            features: { $each: features },
+          },
+        },
+        { new: true, upsert: true, session }
+      );
+    }
+
+    const result = await carModel.findByIdAndUpdate(id, modifiedData, {
+      new: true,
+      upsert: true,
+      session,
+    });
+
+    await session.commitTransaction();
+    await session.endSession();
+    return result;
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(error);
+  }
+
+  //
 };
 
 // ! delete car from database ( soft delete )
@@ -63,25 +106,25 @@ const returnBookedCar = async (payload: TReturnCar) => {
 
   const bookingResult = await bookingModel.findById(bookingId);
 
-  // ! check if booking is exist
+  // * check if booking is exist
   if (!bookingResult) {
     throw new AppError(httpStatus.BAD_REQUEST, "This Booking not exist");
   }
 
   const { user: userId, car: carId, startTime } = bookingResult;
 
-  // ! check if user is exist
+  // * check if user is exist
   const user = await userModel.findById(userId);
   if (!user) {
     throw new AppError(httpStatus.BAD_REQUEST, "This user don't exist");
   }
 
-  // ! check if car is exist
+  // * check if car is exist
   const car = await carModel.findById(carId);
   if (!car) {
     throw new AppError(httpStatus.BAD_REQUEST, "This car don't exist");
   }
-  // ! check if car is deleted
+  // * check if car is deleted
   if (car.isDeleted) {
     throw new AppError(httpStatus.NOT_FOUND, "This car is deleted ");
   }
@@ -91,7 +134,7 @@ const returnBookedCar = async (payload: TReturnCar) => {
   const startMinutes = convertMinutes(startTime);
   const endMinutes = convertMinutes(endTime);
 
-  // ! check if end time is greater than start time
+  // * check if end time is greater than start time
   if (startMinutes >= endMinutes) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -103,10 +146,11 @@ const returnBookedCar = async (payload: TReturnCar) => {
 
   const session = await mongoose.startSession();
 
+  // * transaction rollback starts
   try {
     session.startTransaction();
 
-    // ! update car status
+    // * update car status
     await carModel.findByIdAndUpdate(
       carId,
       {
@@ -115,7 +159,7 @@ const returnBookedCar = async (payload: TReturnCar) => {
       { new: true, upsert: true, session }
     );
 
-    // ! update end time and total cost
+    // * update end time and total cost
     const result = await bookingModel
       .findByIdAndUpdate(
         bookingId,
@@ -150,4 +194,5 @@ export const carServices = {
   getSingleCarFromDb,
   deleteCarFromDatabase,
   returnBookedCar,
+  updateCarFromDatabase,
 };

@@ -35,7 +35,6 @@ const Queryuilder_1 = __importDefault(require("../../builder/Queryuilder"));
 // ! creating a booking in database
 const createBookInDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { carId } = payload, requiredData = __rest(payload, ["carId"]);
-    // requiredData.endTime = null;
     requiredData.totalCost = 0;
     // ! check if  user exist
     const user = yield user_model_1.userModel.findById(payload.user);
@@ -63,17 +62,21 @@ const createBookInDb = (payload) => __awaiter(void 0, void 0, void 0, function* 
         session.startTransaction();
         // ! change car status to unavailable
         yield car_model_1.carModel.findByIdAndUpdate(payload.car, { status: car_constant_1.CarStatus.unavailable }, { new: true });
-        const data = yield booking_model_1.bookingModel.create(requiredData);
+        const createdBooking = yield booking_model_1.bookingModel.create(requiredData);
+        yield createdBooking.populate({
+            path: "user",
+            select: " -password -createdAt -updatedAt -__v ",
+        });
+        yield createdBooking.populate("car");
         yield session.commitTransaction();
         yield session.endSession();
-        return data;
+        return createdBooking;
     }
     catch (error) {
         yield session.abortTransaction();
         yield session.endSession();
         throw new Error(error);
     }
-    return null;
 });
 // ! get all booking (admin access)
 const getAllBookingFromDb = (query) => __awaiter(void 0, void 0, void 0, function* () {
@@ -93,8 +96,20 @@ const getAllBookingFromDb = (query) => __awaiter(void 0, void 0, void 0, functio
         .populate("car");
     return result;
 });
+// ! get user's booking
+const getUserBookingFromDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_model_1.bookingModel
+        .find({ user: id })
+        .populate({
+        path: "user",
+        select: " -password -createdAt -updatedAt -__v ",
+    })
+        .populate("car");
+    return result;
+});
 //
 exports.bookServices = {
     createBookInDb,
     getAllBookingFromDb,
+    getUserBookingFromDb,
 };

@@ -28,9 +28,7 @@ const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 }));
 // ! signin
 const signIn = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("sign in  route !! ");
     const result = yield auth_service_1.authServices.signInFromDb(req.body);
-    console.log(result);
     const { token, user } = result;
     const modifiedToken = `Bearer ${token}`;
     const userObject = user.toObject();

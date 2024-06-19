@@ -12,7 +12,6 @@ import QueryBuilder from "../../builder/Queryuilder";
 const createBookInDb = async (payload: Partial<TBooking>) => {
   const { carId, ...requiredData } = payload;
 
-  // requiredData.endTime = null;
   requiredData.totalCost = 0;
 
   // ! check if  user exist

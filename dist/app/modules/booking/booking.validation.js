@@ -20,6 +20,13 @@ const createBookSchema = zod_1.z.object({
         startTime: timeStringSchema,
     }),
 });
+const returnBookSchema = zod_1.z.object({
+    body: zod_1.z.object({
+        bookingId: zod_1.z.string(),
+        endTime: timeStringSchema,
+    }),
+});
 exports.bookingValidation = {
     createBookSchema,
+    returnBookSchema,
 };

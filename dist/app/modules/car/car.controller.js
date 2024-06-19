@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.carController = void 0;
+const NoDataFound_1 = __importDefault(require("../../util/NoDataFound"));
 const catchAsync_1 = __importDefault(require("../../util/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../util/sendResponse"));
 const car_service_1 = require("./car.service");
@@ -56,5 +57,24 @@ const deleteCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
         data: result,
     });
 }));
+// ! return book car
+const returnBookCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield car_service_1.carServices.returnBookedCar(req.body);
+    if (!result) {
+        return (0, NoDataFound_1.default)(res);
+    }
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Car returned successfully",
+        data: result,
+    });
+}));
 //
-exports.carController = { craeteCar, getAllCar, getSingleCar, deleteCar };
+exports.carController = {
+    craeteCar,
+    getAllCar,
+    getSingleCar,
+    deleteCar,
+    returnBookCar,
+};
