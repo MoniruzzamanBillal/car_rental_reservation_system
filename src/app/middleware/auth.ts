@@ -26,7 +26,11 @@ const auth = (...requiredRoles: TUserRole[]) => {
     const { userRole } = decoded;
 
     if (requiredRoles && !requiredRoles.includes(userRole)) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized access !!!");
+      return res.status(401).json({
+        success: false,
+        statusCode: 401,
+        message: "You have no access to this route",
+      });
     }
 
     req.user = decoded;
