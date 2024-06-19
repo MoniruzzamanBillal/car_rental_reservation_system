@@ -19,11 +19,14 @@ router.post(
 // ! get all cars
 router.get("/", carController.getAllCar);
 
+// ! return booking car
+router.put("/return", auth(UserRole.admin), carController.returnBookCar);
+
 // ! get single car data
 router.get("/:id", carController.getSingleCar);
 
 // ! delete car
-router.delete("/:id", carController.deleteCar);
+router.delete("/:id", auth(UserRole.admin), carController.deleteCar);
 
 // ! update car
 router.put(
@@ -31,13 +34,6 @@ router.put(
   auth(UserRole.admin),
   validateRequest(carValidations.updateCarValidationSchema),
   carController.updateCar
-);
-
-// ! return booking car
-router.put(
-  "/return",
-  validateRequest(bookingValidation.returnBookSchema),
-  carController.returnBookCar
 );
 
 export const carRouter = router;

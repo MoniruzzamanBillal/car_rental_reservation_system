@@ -38,6 +38,16 @@ const carSchema = new Schema<TCar, TCarModel>({
   },
 });
 
+carSchema.pre("find", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+carSchema.pre("findOne", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
 // ! check if car data exists in database
 carSchema.statics.isCarExist = async function (id: string) {
   return carModel.findById(id);
