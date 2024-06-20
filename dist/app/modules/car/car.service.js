@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -39,6 +50,37 @@ const getSingleCarFromDb = (id) => __awaiter(void 0, void 0, void 0, function* (
     const result = yield car_model_1.carModel.findById(id);
     return result;
 });
+// ! updating car from database
+const updateCarFromDatabase = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const session = yield mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        const { features } = payload, remainingData = __rest(payload, ["features"]);
+        const modifiedData = Object.assign({}, remainingData);
+        //  * update car feature
+        if (features && features.length) {
+            yield car_model_1.carModel.findByIdAndUpdate(id, {
+                $addToSet: {
+                    features: { $each: features },
+                },
+            }, { new: true, upsert: true, session });
+        }
+        const result = yield car_model_1.carModel.findByIdAndUpdate(id, modifiedData, {
+            new: true,
+            upsert: true,
+            session,
+        });
+        yield session.commitTransaction();
+        yield session.endSession();
+        return result;
+    }
+    catch (error) {
+        yield session.abortTransaction();
+        yield session.endSession();
+        throw new Error(error);
+    }
+    //
+});
 // ! delete car from database ( soft delete )
 const deleteCarFromDatabase = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const carData = yield car_model_1.carModel.isCarExist(id);
@@ -56,41 +98,42 @@ const deleteCarFromDatabase = (id) => __awaiter(void 0, void 0, void 0, function
 const returnBookedCar = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { bookingId, endTime } = payload;
     const bookingResult = yield booking_model_1.bookingModel.findById(bookingId);
-    // ! check if booking is exist
+    // * check if booking is exist
     if (!bookingResult) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking not exist");
     }
     const { user: userId, car: carId, startTime } = bookingResult;
-    // ! check if user is exist
+    // * check if user is exist
     const user = yield user_model_1.userModel.findById(userId);
     if (!user) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This user don't exist");
     }
-    // ! check if car is exist
+    // * check if car is exist
     const car = yield car_model_1.carModel.findById(carId);
     if (!car) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This car don't exist");
     }
-    // ! check if car is deleted
+    // * check if car is deleted
     if (car.isDeleted) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "This car is deleted ");
     }
     const { pricePerHour } = car;
     const startMinutes = (0, car_util_1.convertMinutes)(startTime);
     const endMinutes = (0, car_util_1.convertMinutes)(endTime);
-    // ! check if end time is greater than start time
+    // * check if end time is greater than start time
     if (startMinutes >= endMinutes) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "End time can't be equal to or less than start time ");
     }
     const totalCost = ((endMinutes - startMinutes) / 60) * pricePerHour;
     const session = yield mongoose_1.default.startSession();
+    // * transaction rollback starts
     try {
         session.startTransaction();
-        // ! update car status
+        // * update car status
         yield car_model_1.carModel.findByIdAndUpdate(carId, {
             status: car_constant_1.CarStatus.available,
         }, { new: true, upsert: true, session });
-        // ! update end time and total cost
+        // * update end time and total cost
         const result = yield booking_model_1.bookingModel
             .findByIdAndUpdate(bookingId, {
             endTime,
@@ -119,4 +162,5 @@ exports.carServices = {
     getSingleCarFromDb,
     deleteCarFromDatabase,
     returnBookedCar,
+    updateCarFromDatabase,
 };

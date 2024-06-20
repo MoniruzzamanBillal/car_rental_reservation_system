@@ -27,7 +27,11 @@ const auth = (...requiredRoles) => {
         const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_secret);
         const { userRole } = decoded;
         if (requiredRoles && !requiredRoles.includes(userRole)) {
-            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Unauthorized access !!!");
+            return res.status(401).json({
+                success: false,
+                statusCode: 401,
+                message: "You have no access to this route",
+            });
         }
         req.user = decoded;
         next();

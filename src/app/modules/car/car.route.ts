@@ -4,7 +4,6 @@ import { UserRole } from "../user/user.constant";
 import validateRequest from "../../middleware/validateRequest";
 import { carValidations } from "./car.validation";
 import { carController } from "./car.controller";
-import { bookingValidation } from "../booking/booking.validation";
 
 const router = Router();
 

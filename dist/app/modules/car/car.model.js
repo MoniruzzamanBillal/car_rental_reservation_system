@@ -47,6 +47,18 @@ const carSchema = new mongoose_1.Schema({
         default: false,
     },
 });
+carSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.find({ isDeleted: { $ne: true } });
+        next();
+    });
+});
+carSchema.pre("findOne", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.find({ isDeleted: { $ne: true } });
+        next();
+    });
+});
 // ! check if car data exists in database
 carSchema.statics.isCarExist = function (id) {
     return __awaiter(this, void 0, void 0, function* () {

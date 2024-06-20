@@ -135,10 +135,18 @@ const returnBookedCar = async (payload: TReturnCar) => {
   const endMinutes = convertMinutes(endTime);
 
   // * check if end time is greater than start time
-  if (startMinutes >= endMinutes) {
+  if (startMinutes > endMinutes) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      "End time can't be equal to or less than start time "
+      "End time can't be less than start time "
+    );
+  }
+
+  //  * check if starttime and endtime is same or not
+  if (startMinutes === endMinutes) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "End time can't be equal to start time "
     );
   }
 

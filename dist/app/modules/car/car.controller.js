@@ -57,6 +57,16 @@ const deleteCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
         data: result,
     });
 }));
+//  ! update car
+const updateCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield car_service_1.carServices.updateCarFromDatabase(req.params.id, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Car updated  successfully",
+        data: result,
+    });
+}));
 // ! return book car
 const returnBookCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield car_service_1.carServices.returnBookedCar(req.body);
@@ -77,4 +87,5 @@ exports.carController = {
     getSingleCar,
     deleteCar,
     returnBookCar,
+    updateCar,
 };

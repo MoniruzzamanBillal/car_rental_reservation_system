@@ -19,13 +19,14 @@ const globalErrorHandler_1 = __importDefault(require("./app/middleware/globalErr
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const MainRoute_1 = require("./app/routes/MainRoute");
 const app = (0, express_1.default)();
+//  ! middleware
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use((0, morgan_1.default)("dev"));
 app.use((0, cookie_parser_1.default)());
 // ! routes
 app.use("/api", MainRoute_1.mainRouter);
-app.get("/api", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res.send({ message: "Car reservation server is running  !! " });
     }
@@ -33,8 +34,11 @@ app.get("/api", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         next(error);
     }
 }));
+// ! not found route
 app.all("*", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(400).json({ success: false, message: "Route not found " });
+    res
+        .status(404)
+        .json({ success: false, statusCode: 404, message: "Not Found" });
 }));
 //! global error handler
 app.use(globalErrorHandler_1.default);

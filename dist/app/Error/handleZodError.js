@@ -7,7 +7,7 @@ exports.handleZodError = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const handleZodError = (error) => {
     var _a;
-    const errorSources = (_a = error === null || error === void 0 ? void 0 : error.issues) === null || _a === void 0 ? void 0 : _a.map((issue) => {
+    const errorMessages = (_a = error === null || error === void 0 ? void 0 : error.issues) === null || _a === void 0 ? void 0 : _a.map((issue) => {
         return {
             path: issue === null || issue === void 0 ? void 0 : issue.path[issue.path.length - 1],
             message: issue === null || issue === void 0 ? void 0 : issue.message,
@@ -17,7 +17,7 @@ const handleZodError = (error) => {
     return {
         statusCode,
         message: error === null || error === void 0 ? void 0 : error.message,
-        errorSources,
+        errorMessages,
     };
 };
 exports.handleZodError = handleZodError;

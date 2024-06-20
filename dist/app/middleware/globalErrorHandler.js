@@ -13,44 +13,59 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const handleCatError_1 = require("../Error/handleCatError");
-const config_1 = __importDefault(require("../config"));
 const zod_1 = require("zod");
 const handleZodError_1 = require("../Error/handleZodError");
 const AppError_1 = __importDefault(require("../Error/AppError"));
+const handleValidationError_1 = require("../Error/handleValidationError");
+const handleDuplicateError_1 = require("../Error/handleDuplicateError");
 const globalErrorHandler = (error, req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let status = error.status || 500;
     let message = error.message || "Something went wrong!!";
-    let errorSources = [
+    let errorMessages = [
         {
             path: "",
             message: "",
         },
     ];
-    // ! zod error
+    // ! zod validation error
     if (error instanceof zod_1.ZodError) {
         const simplifiedError = (0, handleZodError_1.handleZodError)(error);
         status = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.statusCode;
         message = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.message;
-        errorSources = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.errorSources;
+        errorMessages = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.errorMessages;
+    }
+    // ! mongoose validation error
+    else if ((error === null || error === void 0 ? void 0 : error.name) === "ValidationError") {
+        const simplifiedError = (0, handleValidationError_1.handleValidationError)(error);
+        status = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.statusCode;
+        message = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.message;
+        errorMessages = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.errorMessages;
     }
     // ! cast error
     if ((error === null || error === void 0 ? void 0 : error.name) === "CastError") {
         const simplifiedError = (0, handleCatError_1.handleCastError)(error);
         status = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.statusCode;
         message = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.message;
-        errorSources = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.errorSources;
+        errorMessages = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.errorMessages;
+    }
+    // ! handle duplicate error
+    else if ((error === null || error === void 0 ? void 0 : error.code) === 11000) {
+        const simplifiedError = (0, handleDuplicateError_1.handleDuplicateError)(error);
+        status = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.statusCode;
+        message = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.message;
+        errorMessages = simplifiedError === null || simplifiedError === void 0 ? void 0 : simplifiedError.errorMessages;
     }
     // ! handle custom app error
     else if (error instanceof AppError_1.default) {
         status = error === null || error === void 0 ? void 0 : error.status;
         message = error === null || error === void 0 ? void 0 : error.message;
-        errorSources = [{ path: "", message: error === null || error === void 0 ? void 0 : error.message }];
+        errorMessages = [{ path: "", message: error === null || error === void 0 ? void 0 : error.message }];
     }
     return res.status(status).json({
         success: false,
         message,
-        errorSources,
-        stack: config_1.default.node_env === "development" ? error === null || error === void 0 ? void 0 : error.stack : null,
+        errorMessages,
+        stack: error === null || error === void 0 ? void 0 : error.stack,
     });
 });
 exports.default = globalErrorHandler;

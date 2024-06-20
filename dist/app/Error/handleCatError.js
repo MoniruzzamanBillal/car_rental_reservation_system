@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleCastError = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const handleCastError = (error) => {
-    const errorSources = [
+    const errorMessages = [
         {
             path: error === null || error === void 0 ? void 0 : error.path,
             message: error === null || error === void 0 ? void 0 : error.message,
@@ -16,7 +16,7 @@ const handleCastError = (error) => {
     return {
         statusCode,
         message: "Invalid Id ",
-        errorSources,
+        errorMessages,
     };
 };
 exports.handleCastError = handleCastError;
