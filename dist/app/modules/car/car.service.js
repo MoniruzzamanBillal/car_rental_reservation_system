@@ -121,8 +121,12 @@ const returnBookedCar = (payload) => __awaiter(void 0, void 0, void 0, function*
     const startMinutes = (0, car_util_1.convertMinutes)(startTime);
     const endMinutes = (0, car_util_1.convertMinutes)(endTime);
     // * check if end time is greater than start time
-    if (startMinutes >= endMinutes) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "End time can't be equal to or less than start time ");
+    if (startMinutes > endMinutes) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "End time can't be less than start time ");
+    }
+    //  * check if starttime and endtime is same or not
+    if (startMinutes === endMinutes) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "End time can't be equal to start time ");
     }
     const totalCost = ((endMinutes - startMinutes) / 60) * pricePerHour;
     const session = yield mongoose_1.default.startSession();

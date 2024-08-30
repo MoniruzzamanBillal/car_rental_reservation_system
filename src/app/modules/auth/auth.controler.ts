@@ -27,7 +27,9 @@ const signIn = catchAsync(async (req, res) => {
 
   res.cookie("token", modifiedToken, {
     secure: false,
-    httpOnly: false,
+    httpOnly: true,
+    sameSite: "none",
+    maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
   const data = {
