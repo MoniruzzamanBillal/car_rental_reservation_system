@@ -16,6 +16,9 @@ const carSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    carImg: {
+        type: String,
+    },
     description: {
         type: String,
         required: true,
@@ -35,6 +38,10 @@ const carSchema = new mongoose_1.Schema({
         required: true,
     },
     features: {
+        type: [String],
+        required: true,
+    },
+    dropLocation: {
         type: [String],
         required: true,
     },

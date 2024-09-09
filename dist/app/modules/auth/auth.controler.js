@@ -19,6 +19,7 @@ const auth_service_1 = require("./auth.service");
 //  !  create user
 const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.authServices.createUserIntoDB(req.body);
+    console.log(result);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,
         success: true,
@@ -35,7 +36,9 @@ const signIn = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0,
     delete userObject.password;
     res.cookie("token", modifiedToken, {
         secure: false,
-        httpOnly: false,
+        httpOnly: true,
+        sameSite: "none",
+        maxAge: 1000 * 60 * 60 * 24 * 365,
     });
     const data = Object.assign({}, userObject);
     (0, sendResponse_1.default)(res, {

@@ -6,6 +6,9 @@ const carSchema = new Schema<TCar, TCarModel>({
     type: String,
     required: true,
   },
+  carImg: {
+    type: String,
+  },
   description: {
     type: String,
     required: true,
@@ -14,6 +17,7 @@ const carSchema = new Schema<TCar, TCarModel>({
     type: String,
     required: true,
   },
+
   isElectric: {
     type: Boolean,
     required: true,
@@ -25,6 +29,10 @@ const carSchema = new Schema<TCar, TCarModel>({
     required: true,
   },
   features: {
+    type: [String],
+    required: true,
+  },
+  dropLocation: {
     type: [String],
     required: true,
   },

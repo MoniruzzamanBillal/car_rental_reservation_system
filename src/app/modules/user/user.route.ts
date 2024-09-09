@@ -7,5 +7,9 @@ const router = Router();
 // * for admin route
 router.get("/all-user", userControllers.getAllUser);
 
+// ! for getting single user
+// * for admin route
+router.get("/single-user/:id", userControllers.getSingleUser);
+
 //
 export const userRoute = router;

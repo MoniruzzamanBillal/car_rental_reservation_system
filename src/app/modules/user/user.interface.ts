@@ -8,6 +8,7 @@ export interface TUser {
   password: string;
   phone: string;
   address: string;
+  isBlocked?: boolean;
 }
 
 export interface TUSerModel extends Model<TUser> {

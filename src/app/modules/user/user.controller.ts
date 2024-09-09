@@ -15,7 +15,20 @@ const getAllUser = catchAsync(async (req, res) => {
   });
 });
 
+// ! get single user
+const getSingleUser = catchAsync(async (req, res) => {
+  const result = await userServices.getSpecificUser(req.params.id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User retrieved successfully",
+    data: result,
+  });
+});
+
 //
 export const userControllers = {
   getAllUser,
+  getSingleUser,
 };

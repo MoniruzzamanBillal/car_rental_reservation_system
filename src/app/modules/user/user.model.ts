@@ -27,6 +27,10 @@ const userSchema = new Schema<TUser, TUSerModel>(
       type: String,
       required: true,
     },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

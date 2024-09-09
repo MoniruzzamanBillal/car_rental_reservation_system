@@ -29,7 +29,7 @@ const userSchema = new mongoose_1.Schema({
     role: {
         type: String,
         enum: ["user", "admin"],
-        required: true,
+        default: "user",
     },
     password: {
         type: String,
@@ -39,9 +39,9 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    address: {
-        type: String,
-        required: true,
+    isBlocked: {
+        type: Boolean,
+        default: false,
     },
 }, { timestamps: true });
 // ! hash password before saving a user in database
