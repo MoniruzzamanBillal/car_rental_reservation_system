@@ -6,8 +6,6 @@ import { authServices } from "./auth.service";
 const createUser = catchAsync(async (req, res) => {
   const result = await authServices.createUserIntoDB(req.body);
 
-  console.log(result);
-
   sendResponse(res, {
     statusCode: 201,
     success: true,
