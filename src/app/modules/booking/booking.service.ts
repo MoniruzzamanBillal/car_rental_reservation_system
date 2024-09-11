@@ -2,13 +2,14 @@
 import httpStatus from "http-status";
 import AppError from "../../Error/AppError";
 import { userModel } from "../user/user.model";
-import { TBooking } from "./booking.interface";
+import { TBooking, TCompleteBooking } from "./booking.interface";
 import mongoose from "mongoose";
 import { carModel } from "../car/car.model";
 import { CarStatus } from "../car/car.constant";
 import { bookingModel } from "./booking.model";
 import QueryBuilder from "../../builder/Queryuilder";
 import { bookingStatus } from "./booking.constant";
+import { convertMinutes } from "../car/car.util";
 
 // ! creating a booking in database
 const createBookInDb = async (payload: Partial<TBooking>) => {
@@ -182,6 +183,125 @@ const cancelBookingToDb = async (id: string) => {
   }
 };
 
+const completeBooking = async (payload: TCompleteBooking) => {
+  const { bookingId, endTime } = payload;
+
+  const bookingResult = await bookingModel.findById(bookingId);
+
+  // * check if booking is exist
+  if (!bookingResult) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This Booking not exist");
+  }
+
+  //  * check if booking status is completed
+  if (bookingResult?.status === bookingStatus.completed) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This Booking is already completed"
+    );
+  }
+
+  //  * check if booking status is cancel
+  if (bookingResult?.status === bookingStatus.cancel) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This Booking is already canceled"
+    );
+  }
+
+  //  * check if booking status is pending
+  if (bookingResult?.status === bookingStatus.pending) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This Booking is not approved!! "
+    );
+  }
+
+  const { user: userId, car: carId, startTime } = bookingResult;
+
+  // * check if user is exist
+  const user = await userModel.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This user don't exist");
+  }
+
+  // * check if car is exist
+  const car = await carModel.findById(carId);
+  if (!car) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This car don't exist");
+  }
+  // * check if car is deleted
+  if (car.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, "This car is deleted ");
+  }
+
+  const { pricePerHour } = car;
+
+  const startMinutes = convertMinutes(startTime);
+  const endMinutes = convertMinutes(endTime);
+
+  // * check if end time is greater than start time
+  if (startMinutes > endMinutes) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "End time can't be less than start time "
+    );
+  }
+
+  //  * check if starttime and endtime is same or not
+  if (startMinutes === endMinutes) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "End time can't be equal to start time "
+    );
+  }
+
+  const totalCost = ((endMinutes - startMinutes) / 60) * pricePerHour;
+
+  const session = await mongoose.startSession();
+
+  // * transaction rollback starts
+  try {
+    session.startTransaction();
+
+    // * update car status
+    // await carModel.findByIdAndUpdate(
+    //   carId,
+    //   {
+    //     status: CarStatus.available,
+    //   },
+    //   { new: true, upsert: true, session }
+    // );
+
+    // * update end time , total cost , booking status
+    const result = await bookingModel
+      .findByIdAndUpdate(
+        bookingId,
+        {
+          endTime,
+          totalCost,
+          status: bookingStatus.completed,
+        },
+        { new: true, upsert: true, session }
+      )
+      .populate({
+        path: "user",
+        select: " -password -createdAt -updatedAt -__v  ",
+      })
+      .populate("car");
+
+    await session.commitTransaction();
+    await session.endSession();
+    return result;
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(error);
+  }
+
+  //
+};
+
 //
 export const bookServices = {
   createBookInDb,
@@ -189,4 +309,5 @@ export const bookServices = {
   getUserBookingFromDb,
   approveBookingToDb,
   cancelBookingToDb,
+  completeBooking,
 };

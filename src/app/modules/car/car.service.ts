@@ -9,6 +9,7 @@ import { convertMinutes } from "./car.util";
 import mongoose from "mongoose";
 import { CarStatus } from "./car.constant";
 import QueryBuilder from "../../builder/Queryuilder";
+import { bookingStatus } from "../booking/booking.constant";
 
 // ! create car in database
 const createCarIntoDB = async (payload: TCar) => {
@@ -118,6 +119,22 @@ const returnBookedCar = async (payload: TReturnCar) => {
     throw new AppError(httpStatus.BAD_REQUEST, "This Booking not exist");
   }
 
+  //  * check if booking status is cancel
+  if (bookingResult?.status === bookingStatus.cancel) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This Booking is already canceled"
+    );
+  }
+
+  //  * check if booking status is pending
+  if (bookingResult?.status === bookingStatus.pending) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This Booking is not approved!! "
+    );
+  }
+
   const { user: userId, car: carId, startTime } = bookingResult;
 
   // * check if user is exist
@@ -166,13 +183,13 @@ const returnBookedCar = async (payload: TReturnCar) => {
     session.startTransaction();
 
     // * update car status
-    await carModel.findByIdAndUpdate(
-      carId,
-      {
-        status: CarStatus.available,
-      },
-      { new: true, upsert: true, session }
-    );
+    // await carModel.findByIdAndUpdate(
+    //   carId,
+    //   {
+    //     status: CarStatus.available,
+    //   },
+    //   { new: true, upsert: true, session }
+    // );
 
     // * update end time and total cost
     const result = await bookingModel
@@ -181,6 +198,7 @@ const returnBookedCar = async (payload: TReturnCar) => {
         {
           endTime,
           totalCost,
+          status: bookingStatus.completed,
         },
         { new: true, upsert: true, session }
       )

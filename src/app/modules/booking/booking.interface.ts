@@ -12,6 +12,10 @@ export interface TBooking {
   totalCost: number;
 }
 
+export interface TCompleteBooking {
+  bookingId: string;
+  endTime: string;
+}
 export interface TReturnCar {
   bookingId: string;
   endTime: string;

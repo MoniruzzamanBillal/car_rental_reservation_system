@@ -19,7 +19,11 @@ router.post(
 router.get("/", carController.getAllCar);
 
 // ! return booking car
-router.put("/return", auth(UserRole.admin), carController.returnBookCar);
+router.put(
+  "/return",
+  auth(UserRole.admin, UserRole.user),
+  carController.returnBookCar
+);
 
 // ! get single car data
 router.get("/:id", carController.getSingleCar);

@@ -21,6 +21,13 @@ router.get("/", auth(UserRole.admin), bookingController.getAllBooking);
 // ! get user's booking
 router.get("/my-bookings", auth(UserRole.user), bookingController.getBooking);
 
+// ! complete booking
+router.patch(
+  "/complete-booking",
+  auth(UserRole.admin, UserRole.user),
+  bookingController.compleatingBooking
+);
+
 // ! approve  booking
 router.patch(
   "/approve-booking/:id",

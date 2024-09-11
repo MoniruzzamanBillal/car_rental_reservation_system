@@ -78,6 +78,22 @@ const cancelBooking = catchAsync(async (req, res) => {
   });
 });
 
+// ! for compleating booking
+const compleatingBooking = catchAsync(async (req, res) => {
+  const result = await bookServices.completeBooking(req.body);
+
+  if (!result) {
+    return NoDataFound(res);
+  }
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Booking completed ",
+    data: result,
+  });
+});
+
 //
 export const bookingController = {
   createBooking,
@@ -85,4 +101,5 @@ export const bookingController = {
   getBooking,
   approveBooking,
   cancelBooking,
+  compleatingBooking,
 };

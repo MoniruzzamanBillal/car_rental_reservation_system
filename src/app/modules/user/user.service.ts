@@ -5,7 +5,7 @@ import { UserRole } from "./user.constant";
 
 // ! get all user from database
 const getAllUserFromDb = async () => {
-  const result = await userModel.find().select("-password");
+  const result = await userModel.find().sort({ role: 1 }).select("-password");
 
   return result;
 };
