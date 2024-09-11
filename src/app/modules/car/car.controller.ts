@@ -17,7 +17,7 @@ const craeteCar = catchAsync(async (req, res) => {
 
 // ! get all car
 const getAllCar = catchAsync(async (req, res) => {
-  const result = await carServices.getAllCarDataFromDb();
+  const result = await carServices.getAllCarDataFromDb(req.query);
 
   sendResponse(res, {
     statusCode: 200,

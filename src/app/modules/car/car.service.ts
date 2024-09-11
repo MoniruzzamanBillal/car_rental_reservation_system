@@ -8,6 +8,7 @@ import { userModel } from "../user/user.model";
 import { convertMinutes } from "./car.util";
 import mongoose from "mongoose";
 import { CarStatus } from "./car.constant";
+import QueryBuilder from "../../builder/Queryuilder";
 
 // ! create car in database
 const createCarIntoDB = async (payload: TCar) => {
@@ -16,8 +17,14 @@ const createCarIntoDB = async (payload: TCar) => {
 };
 
 // ! get all car cars from database
-const getAllCarDataFromDb = async () => {
-  return await carModel.find();
+const getAllCarDataFromDb = async (query: Record<string, unknown>) => {
+  const carQueryBuilder = carModel.find().sort({ status: 1 });
+
+  const carQuery = new QueryBuilder(carQueryBuilder, query).sort();
+
+  const result = await carQuery.queryModel;
+
+  return result;
 };
 
 //  ! get single car data

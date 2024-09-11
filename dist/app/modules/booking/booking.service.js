@@ -32,6 +32,7 @@ const car_model_1 = require("../car/car.model");
 const car_constant_1 = require("../car/car.constant");
 const booking_model_1 = require("./booking.model");
 const Queryuilder_1 = __importDefault(require("../../builder/Queryuilder"));
+const booking_constant_1 = require("./booking.constant");
 // ! creating a booking in database
 const createBookInDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { carId } = payload, requiredData = __rest(payload, ["carId"]);
@@ -61,8 +62,11 @@ const createBookInDb = (payload) => __awaiter(void 0, void 0, void 0, function* 
     try {
         session.startTransaction();
         // ! change car status to unavailable
-        yield car_model_1.carModel.findByIdAndUpdate(payload.car, { status: car_constant_1.CarStatus.unavailable }, { new: true });
-        const createdBooking = yield booking_model_1.bookingModel.create(requiredData);
+        yield car_model_1.carModel.findByIdAndUpdate(payload.car, { status: car_constant_1.CarStatus.unavailable }, { new: true, session });
+        const createdBookingArray = yield booking_model_1.bookingModel.create([requiredData], {
+            session,
+        });
+        const createdBooking = createdBookingArray[0];
         yield createdBooking.populate({
             path: "user",
             select: " -password -createdAt -updatedAt -__v ",
@@ -91,7 +95,7 @@ const getAllBookingFromDb = (query) => __awaiter(void 0, void 0, void 0, functio
     const result = yield bookingQuery.queryModel
         .populate({
         path: "user",
-        select: "-password -createdAt  -updatedAt -__v ",
+        select: "-password -createdAt  -updatedAt -__v -role ",
     })
         .populate("car");
     return result;
@@ -107,9 +111,43 @@ const getUserBookingFromDb = (id) => __awaiter(void 0, void 0, void 0, function*
         .populate("car");
     return result;
 });
+// ! for changing booking status to approve
+const approveBookingToDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const bookingData = yield booking_model_1.bookingModel.findById(id);
+    if (!bookingData) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid booking data !! ");
+    }
+    const modifiedData = yield booking_model_1.bookingModel.findByIdAndUpdate(id, { status: booking_constant_1.bookingStatus.approved }, { new: true, runValidators: true });
+    return modifiedData;
+});
+// ! for changing booking status to cancel
+const cancelBookingToDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const bookingData = yield booking_model_1.bookingModel.findById(id);
+    if (!bookingData) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid booking data !! ");
+    }
+    const session = yield mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        const carId = bookingData === null || bookingData === void 0 ? void 0 : bookingData.car.toString();
+        //  *  for changing car status to availavle
+        yield car_model_1.carModel.findByIdAndUpdate(carId, { status: car_constant_1.CarStatus.available }, { new: true, runValidators: true, session });
+        const modifiedData = yield booking_model_1.bookingModel.findByIdAndUpdate(id, { status: booking_constant_1.bookingStatus.cancel }, { new: true, runValidators: true, session });
+        yield session.commitTransaction();
+        yield session.endSession();
+        return modifiedData;
+    }
+    catch (error) {
+        yield session.abortTransaction();
+        yield session.endSession();
+        throw new Error(error === null || error === void 0 ? void 0 : error.message);
+    }
+});
 //
 exports.bookServices = {
     createBookInDb,
     getAllBookingFromDb,
     getUserBookingFromDb,
+    approveBookingToDb,
+    cancelBookingToDb,
 };

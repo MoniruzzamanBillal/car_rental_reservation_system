@@ -19,7 +19,6 @@ const auth_service_1 = require("./auth.service");
 //  !  create user
 const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.authServices.createUserIntoDB(req.body);
-    console.log(result);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,
         success: true,

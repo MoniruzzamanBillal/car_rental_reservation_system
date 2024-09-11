@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import AppError from "../../Error/AppError";
 import { userModel } from "../user/user.model";
@@ -101,7 +102,17 @@ const getAllBookingFromDb = async (query: Record<string, unknown>) => {
     })
     .populate("car");
 
-  return result;
+  const modifiedResult = result.sort((a: any, b: any) => {
+    const order: Record<string, number> = {
+      pending: 1,
+      approved: 2,
+      completed: 3,
+    };
+    return order[a.status] - order[b.status];
+  });
+
+  return modifiedResult;
+  // return result;
 };
 
 // ! get user's booking

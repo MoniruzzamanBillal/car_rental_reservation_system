@@ -58,9 +58,31 @@ const getBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+// ! for approving booking  data
+const approveBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_service_1.bookServices.approveBookingToDb(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Booking Approved successfully ",
+        data: result,
+    });
+}));
+// ! for canceling booking
+const cancelBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_service_1.bookServices.cancelBookingToDb(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Booking canceled successfully ",
+        data: result,
+    });
+}));
 //
 exports.bookingController = {
     createBooking,
     getAllBooking,
     getBooking,
+    approveBooking,
+    cancelBooking,
 };
