@@ -41,11 +41,6 @@ const getAllBooking = catchAsync(async (req, res) => {
 const getAllCompleteedBooking = catchAsync(async (req, res) => {
   const result = await bookServices.getAllCompletedBookign();
 
-  // ! if no data found
-  if (result.length <= 0) {
-    return NoDataFound(res);
-  }
-
   sendResponse(res, {
     statusCode: 200,
     success: true,
