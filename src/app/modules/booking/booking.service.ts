@@ -129,7 +129,16 @@ const getAllCompletedBookign = async () => {
       })
       .populate("car");
 
-    return completedBookings;
+    const sortedBookings = completedBookings.sort((a: any, b: any) => {
+      const carStatusOrder: Record<string, number> = {
+        unavailable: 1,
+        available: 2,
+      };
+
+      return carStatusOrder[a.car.status] - carStatusOrder[b.car.status];
+    });
+
+    return sortedBookings;
   } catch (error) {
     throw new Error("Error fetching completed bookings: " + error);
   }
