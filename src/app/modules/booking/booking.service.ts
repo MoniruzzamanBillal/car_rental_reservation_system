@@ -54,10 +54,14 @@ const createBookInDb = async (payload: Partial<TBooking>) => {
     await carModel.findByIdAndUpdate(
       payload.car,
       { status: CarStatus.unavailable },
-      { new: true }
+      { new: true, session }
     );
 
-    const createdBooking = await bookingModel.create(requiredData);
+    const createdBookingArray = await bookingModel.create([requiredData], {
+      session,
+    });
+
+    const createdBooking = createdBookingArray[0];
 
     await createdBooking.populate({
       path: "user",
@@ -130,10 +134,48 @@ const approveBookingToDb = async (id: string) => {
   return modifiedData;
 };
 
+// ! for changing booking status to cancel
+const cancelBookingToDb = async (id: string) => {
+  const bookingData = await bookingModel.findById(id);
+
+  if (!bookingData) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid booking data !! ");
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    const carId = bookingData?.car.toString();
+
+    //  *  for changing car status to availavle
+    await carModel.findByIdAndUpdate(
+      carId,
+      { status: CarStatus.available },
+      { new: true, runValidators: true, session }
+    );
+
+    const modifiedData = await bookingModel.findByIdAndUpdate(
+      id,
+      { status: bookingStatus.cancel },
+      { new: true, runValidators: true, session }
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+    return modifiedData;
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(error?.message);
+  }
+};
+
 //
 export const bookServices = {
   createBookInDb,
   getAllBookingFromDb,
   getUserBookingFromDb,
   approveBookingToDb,
+  cancelBookingToDb,
 };

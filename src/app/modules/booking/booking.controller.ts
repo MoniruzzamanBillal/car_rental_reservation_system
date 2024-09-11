@@ -61,7 +61,19 @@ const approveBooking = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Approved successfully ",
+    message: "Booking Approved successfully ",
+    data: result,
+  });
+});
+
+// ! for canceling booking
+const cancelBooking = catchAsync(async (req, res) => {
+  const result = await bookServices.cancelBookingToDb(req.params.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Booking canceled successfully ",
     data: result,
   });
 });
@@ -72,4 +84,5 @@ export const bookingController = {
   getAllBooking,
   getBooking,
   approveBooking,
+  cancelBooking,
 };

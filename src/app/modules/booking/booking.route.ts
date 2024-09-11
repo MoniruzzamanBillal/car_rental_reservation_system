@@ -28,4 +28,11 @@ router.patch(
   bookingController.approveBooking
 );
 
+// ! cancel  booking
+router.patch(
+  "/cancel-booking/:id",
+  auth(UserRole.admin),
+  bookingController.cancelBooking
+);
+
 export const bookingRouter = router;
