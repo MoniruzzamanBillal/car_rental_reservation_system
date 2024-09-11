@@ -7,6 +7,7 @@ import { carModel } from "../car/car.model";
 import { CarStatus } from "../car/car.constant";
 import { bookingModel } from "./booking.model";
 import QueryBuilder from "../../builder/Queryuilder";
+import { bookingStatus } from "./booking.constant";
 
 // ! creating a booking in database
 const createBookInDb = async (payload: Partial<TBooking>) => {
@@ -92,7 +93,7 @@ const getAllBookingFromDb = async (query: Record<string, unknown>) => {
   const result = await bookingQuery.queryModel
     .populate({
       path: "user",
-      select: "-password -createdAt  -updatedAt -__v ",
+      select: "-password -createdAt  -updatedAt -__v -role ",
     })
     .populate("car");
 
@@ -112,9 +113,27 @@ const getUserBookingFromDb = async (id: string) => {
   return result;
 };
 
+// ! for changing booking status to approve
+const approveBookingToDb = async (id: string) => {
+  const bookingData = await bookingModel.findById(id);
+
+  if (!bookingData) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid booking data !! ");
+  }
+
+  const modifiedData = await bookingModel.findByIdAndUpdate(
+    id,
+    { status: bookingStatus.approved },
+    { new: true, runValidators: true }
+  );
+
+  return modifiedData;
+};
+
 //
 export const bookServices = {
   createBookInDb,
   getAllBookingFromDb,
   getUserBookingFromDb,
+  approveBookingToDb,
 };

@@ -21,4 +21,11 @@ router.get("/", auth(UserRole.admin), bookingController.getAllBooking);
 // ! get user's booking
 router.get("/my-bookings", auth(UserRole.user), bookingController.getBooking);
 
+// ! approve  booking
+router.patch(
+  "/approve-booking/:id",
+  auth(UserRole.admin),
+  bookingController.approveBooking
+);
+
 export const bookingRouter = router;

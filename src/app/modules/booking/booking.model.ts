@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { TBooking } from "./booking.interface";
+import { bookingStatus } from "./booking.constant";
 
 const bookingSchema = new Schema<TBooking>(
   {
@@ -29,9 +30,23 @@ const bookingSchema = new Schema<TBooking>(
       type: Number,
       required: true,
     },
+    status: {
+      type: String,
+      required: true,
+      default: bookingStatus.pending,
+    },
+    dropLocation: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
+
+bookingSchema.pre("find", async function (next) {
+  this.find({ status: { $ne: bookingStatus.cancel } });
+  next();
+});
 
 //
 

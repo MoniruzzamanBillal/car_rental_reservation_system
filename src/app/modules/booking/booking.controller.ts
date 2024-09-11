@@ -54,9 +54,22 @@ const getBooking = catchAsync(async (req, res) => {
   });
 });
 
+// ! for approving booking  data
+const approveBooking = catchAsync(async (req, res) => {
+  const result = await bookServices.approveBookingToDb(req.params.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Approved successfully ",
+    data: result,
+  });
+});
+
 //
 export const bookingController = {
   createBooking,
   getAllBooking,
   getBooking,
+  approveBooking,
 };
