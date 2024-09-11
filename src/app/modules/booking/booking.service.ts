@@ -10,6 +10,7 @@ import { bookingModel } from "./booking.model";
 import QueryBuilder from "../../builder/Queryuilder";
 import { bookingStatus } from "./booking.constant";
 import { convertMinutes } from "../car/car.util";
+import { path } from "path";
 
 // ! creating a booking in database
 const createBookInDb = async (payload: Partial<TBooking>) => {
@@ -127,18 +128,14 @@ const getAllCompletedBookign = async () => {
         path: "user",
         select: " -password -createdAt -updatedAt -__v ",
       })
-      .populate("car");
+      .populate({
+        path: "car",
+        match: { status: { $eq: "unavailable" } },
+      });
 
-    const sortedBookings = completedBookings.sort((a: any, b: any) => {
-      const carStatusOrder: Record<string, number> = {
-        unavailable: 1,
-        available: 2,
-      };
+    const filterData = completedBookings.filter((booking) => booking?.car);
 
-      return carStatusOrder[a.car.status] - carStatusOrder[b.car.status];
-    });
-
-    return sortedBookings;
+    return filterData;
   } catch (error) {
     throw new Error("Error fetching completed bookings: " + error);
   }

@@ -81,6 +81,18 @@ const returnBookCar = catchAsync(async (req, res) => {
   });
 });
 
+// ! return car / change car status to available
+const returnCar = catchAsync(async (req, res) => {
+  const result = await carServices.changeStatusAvailable(req.params.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Car returned successfully",
+    data: result,
+  });
+});
+
 //
 export const carController = {
   craeteCar,
@@ -89,4 +101,5 @@ export const carController = {
   deleteCar,
   returnBookCar,
   updateCar,
+  returnCar,
 };

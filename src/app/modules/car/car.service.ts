@@ -220,6 +220,30 @@ const returnBookedCar = async (payload: TReturnCar) => {
   //
 };
 
+// ! changing car status to available
+const changeStatusAvailable = async (id: string) => {
+  // * check if car is exist
+  const car = await carModel.findById(id);
+  if (!car) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This car don't exist");
+  }
+  // * check if car is deleted
+  if (car.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, "This car is deleted ");
+  }
+
+  // * update car status
+  const result = await carModel.findByIdAndUpdate(
+    id,
+    {
+      status: CarStatus.available,
+    },
+    { new: true, upsert: true }
+  );
+
+  return result;
+};
+
 //
 export const carServices = {
   createCarIntoDB,
@@ -228,4 +252,5 @@ export const carServices = {
   deleteCarFromDatabase,
   returnBookedCar,
   updateCarFromDatabase,
+  changeStatusAvailable,
 };

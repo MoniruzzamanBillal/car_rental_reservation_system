@@ -39,4 +39,9 @@ router.put(
   carController.updateCar
 );
 
+// ! return car / change car status
+router.patch("/return-car/:id", auth(UserRole.admin), carController.returnCar);
+
+//
+
 export const carRouter = router;
