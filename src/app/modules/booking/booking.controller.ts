@@ -37,6 +37,22 @@ const getAllBooking = catchAsync(async (req, res) => {
     data: result,
   });
 });
+// ! get all completed booking
+const getAllCompleteedBooking = catchAsync(async (req, res) => {
+  const result = await bookServices.getAllCompletedBookign();
+
+  // ! if no data found
+  if (result.length <= 0) {
+    return NoDataFound(res);
+  }
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Completed Bookings retrieved successfully",
+    data: result,
+  });
+});
 
 //  ! get user booking
 const getBooking = catchAsync(async (req, res) => {
@@ -102,4 +118,5 @@ export const bookingController = {
   approveBooking,
   cancelBooking,
   compleatingBooking,
+  getAllCompleteedBooking,
 };

@@ -17,6 +17,12 @@ router.post(
 
 //  ! get all booking
 router.get("/", auth(UserRole.admin), bookingController.getAllBooking);
+//  ! get all completed booking
+router.get(
+  "/completed-booking",
+  auth(UserRole.admin),
+  bookingController.getAllCompleteedBooking
+);
 
 // ! get user's booking
 router.get("/my-bookings", auth(UserRole.user), bookingController.getBooking);

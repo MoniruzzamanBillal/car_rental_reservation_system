@@ -116,6 +116,25 @@ const getAllBookingFromDb = async (query: Record<string, unknown>) => {
   // return result;
 };
 
+// ! get completed booking from database
+const getAllCompletedBookign = async () => {
+  try {
+    const completedBookings = await bookingModel
+      .find({
+        status: { $eq: "completed" },
+      })
+      .populate({
+        path: "user",
+        select: " -password -createdAt -updatedAt -__v ",
+      })
+      .populate("car");
+
+    return completedBookings;
+  } catch (error) {
+    throw new Error("Error fetching completed bookings: " + error);
+  }
+};
+
 // ! get user's booking
 const getUserBookingFromDb = async (id: string) => {
   const result = await bookingModel
@@ -183,6 +202,7 @@ const cancelBookingToDb = async (id: string) => {
   }
 };
 
+// ! for finishing booking
 const completeBooking = async (payload: TCompleteBooking) => {
   const { bookingId, endTime } = payload;
 
@@ -310,4 +330,5 @@ export const bookServices = {
   approveBookingToDb,
   cancelBookingToDb,
   completeBooking,
+  getAllCompletedBookign,
 };
