@@ -10,7 +10,6 @@ import { bookingModel } from "./booking.model";
 import QueryBuilder from "../../builder/Queryuilder";
 import { bookingStatus } from "./booking.constant";
 import { convertMinutes } from "../car/car.util";
-import { path } from "path";
 
 // ! creating a booking in database
 const createBookInDb = async (payload: Partial<TBooking>) => {
@@ -177,6 +176,19 @@ const cancelBookingToDb = async (id: string) => {
 
   if (!bookingData) {
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid booking data !! ");
+  }
+
+  //  * check if booking status is completed
+  if (bookingData?.status === bookingStatus.completed) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This Booking is completed");
+  }
+
+  //  * check if booking status is cancel
+  if (bookingData?.status === bookingStatus.cancel) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This Booking is already canceled"
+    );
   }
 
   const session = await mongoose.startSession();

@@ -32,14 +32,19 @@ const user_model_1 = require("../user/user.model");
 const car_util_1 = require("./car.util");
 const mongoose_1 = __importDefault(require("mongoose"));
 const car_constant_1 = require("./car.constant");
+const Queryuilder_1 = __importDefault(require("../../builder/Queryuilder"));
+const booking_constant_1 = require("../booking/booking.constant");
 // ! create car in database
 const createCarIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield car_model_1.carModel.create(payload);
     return result;
 });
 // ! get all car cars from database
-const getAllCarDataFromDb = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield car_model_1.carModel.find();
+const getAllCarDataFromDb = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const carQueryBuilder = car_model_1.carModel.find().sort({ status: 1 });
+    const carQuery = new Queryuilder_1.default(carQueryBuilder, query).sort();
+    const result = yield carQuery.queryModel;
+    return result;
 });
 //  ! get single car data
 const getSingleCarFromDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -102,6 +107,14 @@ const returnBookedCar = (payload) => __awaiter(void 0, void 0, void 0, function*
     if (!bookingResult) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking not exist");
     }
+    //  * check if booking status is cancel
+    if ((bookingResult === null || bookingResult === void 0 ? void 0 : bookingResult.status) === booking_constant_1.bookingStatus.cancel) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking is already canceled");
+    }
+    //  * check if booking status is pending
+    if ((bookingResult === null || bookingResult === void 0 ? void 0 : bookingResult.status) === booking_constant_1.bookingStatus.pending) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking is not approved!! ");
+    }
     const { user: userId, car: carId, startTime } = bookingResult;
     // * check if user is exist
     const user = yield user_model_1.userModel.findById(userId);
@@ -134,14 +147,19 @@ const returnBookedCar = (payload) => __awaiter(void 0, void 0, void 0, function*
     try {
         session.startTransaction();
         // * update car status
-        yield car_model_1.carModel.findByIdAndUpdate(carId, {
-            status: car_constant_1.CarStatus.available,
-        }, { new: true, upsert: true, session });
+        // await carModel.findByIdAndUpdate(
+        //   carId,
+        //   {
+        //     status: CarStatus.available,
+        //   },
+        //   { new: true, upsert: true, session }
+        // );
         // * update end time and total cost
         const result = yield booking_model_1.bookingModel
             .findByIdAndUpdate(bookingId, {
             endTime,
             totalCost,
+            status: booking_constant_1.bookingStatus.completed,
         }, { new: true, upsert: true, session })
             .populate({
             path: "user",
@@ -159,6 +177,23 @@ const returnBookedCar = (payload) => __awaiter(void 0, void 0, void 0, function*
     }
     //
 });
+// ! changing car status to available
+const changeStatusAvailable = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    // * check if car is exist
+    const car = yield car_model_1.carModel.findById(id);
+    if (!car) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This car don't exist");
+    }
+    // * check if car is deleted
+    if (car.isDeleted) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "This car is deleted ");
+    }
+    // * update car status
+    const result = yield car_model_1.carModel.findByIdAndUpdate(id, {
+        status: car_constant_1.CarStatus.available,
+    }, { new: true, upsert: true });
+    return result;
+});
 //
 exports.carServices = {
     createCarIntoDB,
@@ -167,4 +202,5 @@ exports.carServices = {
     deleteCarFromDatabase,
     returnBookedCar,
     updateCarFromDatabase,
+    changeStatusAvailable,
 };

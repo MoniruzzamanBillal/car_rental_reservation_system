@@ -24,6 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookServices = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../../Error/AppError"));
 const user_model_1 = require("../user/user.model");
@@ -33,6 +34,7 @@ const car_constant_1 = require("../car/car.constant");
 const booking_model_1 = require("./booking.model");
 const Queryuilder_1 = __importDefault(require("../../builder/Queryuilder"));
 const booking_constant_1 = require("./booking.constant");
+const car_util_1 = require("../car/car.util");
 // ! creating a booking in database
 const createBookInDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { carId } = payload, requiredData = __rest(payload, ["carId"]);
@@ -98,7 +100,38 @@ const getAllBookingFromDb = (query) => __awaiter(void 0, void 0, void 0, functio
         select: "-password -createdAt  -updatedAt -__v -role ",
     })
         .populate("car");
-    return result;
+    const modifiedResult = result.sort((a, b) => {
+        const order = {
+            pending: 1,
+            approved: 2,
+            completed: 3,
+        };
+        return order[a.status] - order[b.status];
+    });
+    return modifiedResult;
+    // return result;
+});
+// ! get completed booking from database
+const getAllCompletedBookign = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const completedBookings = yield booking_model_1.bookingModel
+            .find({
+            status: { $eq: "completed" },
+        })
+            .populate({
+            path: "user",
+            select: " -password -createdAt -updatedAt -__v ",
+        })
+            .populate({
+            path: "car",
+            match: { status: { $eq: "unavailable" } },
+        });
+        const filterData = completedBookings.filter((booking) => booking === null || booking === void 0 ? void 0 : booking.car);
+        return filterData;
+    }
+    catch (error) {
+        throw new Error("Error fetching completed bookings: " + error);
+    }
 });
 // ! get user's booking
 const getUserBookingFromDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -143,6 +176,88 @@ const cancelBookingToDb = (id) => __awaiter(void 0, void 0, void 0, function* ()
         throw new Error(error === null || error === void 0 ? void 0 : error.message);
     }
 });
+// ! for finishing booking
+const completeBooking = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { bookingId, endTime } = payload;
+    const bookingResult = yield booking_model_1.bookingModel.findById(bookingId);
+    // * check if booking is exist
+    if (!bookingResult) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking not exist");
+    }
+    //  * check if booking status is completed
+    if ((bookingResult === null || bookingResult === void 0 ? void 0 : bookingResult.status) === booking_constant_1.bookingStatus.completed) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking is already completed");
+    }
+    //  * check if booking status is cancel
+    if ((bookingResult === null || bookingResult === void 0 ? void 0 : bookingResult.status) === booking_constant_1.bookingStatus.cancel) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking is already canceled");
+    }
+    //  * check if booking status is pending
+    if ((bookingResult === null || bookingResult === void 0 ? void 0 : bookingResult.status) === booking_constant_1.bookingStatus.pending) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking is not approved!! ");
+    }
+    const { user: userId, car: carId, startTime } = bookingResult;
+    // * check if user is exist
+    const user = yield user_model_1.userModel.findById(userId);
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This user don't exist");
+    }
+    // * check if car is exist
+    const car = yield car_model_1.carModel.findById(carId);
+    if (!car) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This car don't exist");
+    }
+    // * check if car is deleted
+    if (car.isDeleted) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "This car is deleted ");
+    }
+    const { pricePerHour } = car;
+    const startMinutes = (0, car_util_1.convertMinutes)(startTime);
+    const endMinutes = (0, car_util_1.convertMinutes)(endTime);
+    // * check if end time is greater than start time
+    if (startMinutes > endMinutes) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "End time can't be less than start time ");
+    }
+    //  * check if starttime and endtime is same or not
+    if (startMinutes === endMinutes) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "End time can't be equal to start time ");
+    }
+    const totalCost = ((endMinutes - startMinutes) / 60) * pricePerHour;
+    const session = yield mongoose_1.default.startSession();
+    // * transaction rollback starts
+    try {
+        session.startTransaction();
+        // * update car status
+        // await carModel.findByIdAndUpdate(
+        //   carId,
+        //   {
+        //     status: CarStatus.available,
+        //   },
+        //   { new: true, upsert: true, session }
+        // );
+        // * update end time , total cost , booking status
+        const result = yield booking_model_1.bookingModel
+            .findByIdAndUpdate(bookingId, {
+            endTime,
+            totalCost,
+            status: booking_constant_1.bookingStatus.completed,
+        }, { new: true, upsert: true, session })
+            .populate({
+            path: "user",
+            select: " -password -createdAt -updatedAt -__v  ",
+        })
+            .populate("car");
+        yield session.commitTransaction();
+        yield session.endSession();
+        return result;
+    }
+    catch (error) {
+        yield session.abortTransaction();
+        yield session.endSession();
+        throw new Error(error);
+    }
+    //
+});
 //
 exports.bookServices = {
     createBookInDb,
@@ -150,4 +265,6 @@ exports.bookServices = {
     getUserBookingFromDb,
     approveBookingToDb,
     cancelBookingToDb,
+    completeBooking,
+    getAllCompletedBookign,
 };

@@ -21,7 +21,7 @@ const createCarIntoDB = async (payload: TCar) => {
 const getAllCarDataFromDb = async (query: Record<string, unknown>) => {
   const carQueryBuilder = carModel.find().sort({ status: 1 });
 
-  const carQuery = new QueryBuilder(carQueryBuilder, query).sort();
+  const carQuery = new QueryBuilder(carQueryBuilder, query);
 
   const result = await carQuery.queryModel;
 

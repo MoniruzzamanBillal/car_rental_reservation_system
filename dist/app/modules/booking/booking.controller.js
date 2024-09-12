@@ -45,6 +45,16 @@ const getAllBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
+// ! get all completed booking
+const getAllCompleteedBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_service_1.bookServices.getAllCompletedBookign();
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Completed Bookings retrieved successfully",
+        data: result,
+    });
+}));
 //  ! get user booking
 const getBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield booking_service_1.bookServices.getUserBookingFromDb(req.user.userId);
@@ -78,6 +88,19 @@ const cancelBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
+// ! for compleating booking
+const compleatingBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_service_1.bookServices.completeBooking(req.body);
+    if (!result) {
+        return (0, NoDataFound_1.default)(res);
+    }
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Booking completed ",
+        data: result,
+    });
+}));
 //
 exports.bookingController = {
     createBooking,
@@ -85,4 +108,6 @@ exports.bookingController = {
     getBooking,
     approveBooking,
     cancelBooking,
+    compleatingBooking,
+    getAllCompleteedBooking,
 };

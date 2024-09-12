@@ -16,11 +16,14 @@ router.post("/", (0, auth_1.default)(user_constant_1.UserRole.admin), (0, valida
 // ! get all cars
 router.get("/", car_controller_1.carController.getAllCar);
 // ! return booking car
-router.put("/return", (0, auth_1.default)(user_constant_1.UserRole.admin), car_controller_1.carController.returnBookCar);
+router.put("/return", (0, auth_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.user), car_controller_1.carController.returnBookCar);
 // ! get single car data
 router.get("/:id", car_controller_1.carController.getSingleCar);
 // ! delete car
 router.delete("/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), car_controller_1.carController.deleteCar);
 // ! update car
 router.put("/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), (0, validateRequest_1.default)(car_validation_1.carValidations.updateCarValidationSchema), car_controller_1.carController.updateCar);
+// ! return car / change car status
+router.patch("/return-car/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), car_controller_1.carController.returnCar);
+//
 exports.carRouter = router;

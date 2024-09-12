@@ -44,7 +44,7 @@ router.patch(
 // ! cancel  booking
 router.patch(
   "/cancel-booking/:id",
-  auth(UserRole.admin),
+  auth(UserRole.admin, UserRole.user),
   bookingController.cancelBooking
 );
 

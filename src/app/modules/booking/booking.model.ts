@@ -35,13 +35,30 @@ const bookingSchema = new Schema<TBooking>(
       required: true,
       default: bookingStatus.pending,
     },
+    payment: {
+      type: String,
+      required: true,
+      default: "pending",
+    },
     dropLocation: {
+      type: String,
+      required: true,
+    },
+    additionalFeature: {
+      type: [String],
+    },
+    paymentMethod: {
       type: String,
       required: true,
     },
   },
   { timestamps: true }
 );
+
+bookingSchema.pre("find", async function (next) {
+  this.find({ isCanceled: { $ne: true } });
+  next();
+});
 
 bookingSchema.pre("find", async function (next) {
   this.find({ status: { $ne: bookingStatus.cancel } });

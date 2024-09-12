@@ -19,7 +19,7 @@ const user_model_1 = require("./user.model");
 const user_constant_1 = require("./user.constant");
 // ! get all user from database
 const getAllUserFromDb = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_model_1.userModel.find().select("-password");
+    const result = yield user_model_1.userModel.find().sort({ role: 1 }).select("-password");
     return result;
 });
 // ! get single user
