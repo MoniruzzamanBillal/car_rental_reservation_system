@@ -163,6 +163,13 @@ const getUserBookingFromDb = async (id: string) => {
   return midifiedBooking;
 };
 
+// ! get specific booking
+const getSpecificBookingFromDb = async (id: string) => {
+  const result = await bookingModel.findById(id);
+
+  return result;
+};
+
 // ! for changing booking status to approve
 const approveBookingToDb = async (id: string) => {
   const bookingData = await bookingModel.findById(id);
@@ -359,4 +366,5 @@ export const bookServices = {
   cancelBookingToDb,
   completeBooking,
   getAllCompletedBookign,
+  getSpecificBookingFromDb,
 };

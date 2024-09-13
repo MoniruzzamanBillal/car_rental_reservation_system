@@ -27,6 +27,13 @@ router.get(
 // ! get user's booking
 router.get("/my-bookings", auth(UserRole.user), bookingController.getBooking);
 
+// ! get specific  booking
+router.get(
+  "/single-booking/:id",
+  auth(UserRole.admin, UserRole.user),
+  bookingController.getSpecificBooking
+);
+
 // ! complete booking
 router.patch(
   "/complete-booking",

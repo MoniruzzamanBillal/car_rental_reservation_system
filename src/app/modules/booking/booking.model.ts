@@ -30,6 +30,12 @@ const bookingSchema = new Schema<TBooking>(
       type: Number,
       required: true,
     },
+    license: {
+      type: Number,
+    },
+    nid: {
+      type: Number,
+    },
     status: {
       type: String,
       required: true,

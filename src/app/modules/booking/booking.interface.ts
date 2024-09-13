@@ -13,6 +13,8 @@ export interface TBooking {
   startTime: string;
   endTime: string | null;
   totalCost: number;
+  license?: number;
+  nid?: number;
 }
 
 export interface TCompleteBooking {

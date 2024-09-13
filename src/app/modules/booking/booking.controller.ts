@@ -49,6 +49,18 @@ const getAllCompleteedBooking = catchAsync(async (req, res) => {
   });
 });
 
+// ! for getting specific booking data
+const getSpecificBooking = catchAsync(async (req, res) => {
+  const result = await bookServices.getSpecificBookingFromDb(req.params.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Booking retrived successfully ",
+    data: result,
+  });
+});
+
 //  ! get user booking
 const getBooking = catchAsync(async (req, res) => {
   const result = await bookServices.getUserBookingFromDb(req.user.userId);
@@ -114,4 +126,5 @@ export const bookingController = {
   cancelBooking,
   compleatingBooking,
   getAllCompleteedBooking,
+  getSpecificBooking,
 };
