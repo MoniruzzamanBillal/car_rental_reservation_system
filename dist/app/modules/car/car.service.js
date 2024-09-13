@@ -34,15 +34,22 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const car_constant_1 = require("./car.constant");
 const Queryuilder_1 = __importDefault(require("../../builder/Queryuilder"));
 const booking_constant_1 = require("../booking/booking.constant");
+const SendImageToCloudinary_1 = require("../../util/SendImageToCloudinary");
 // ! create car in database
-const createCarIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield car_model_1.carModel.create(payload);
+const createCarIntoDB = (payload, file) => __awaiter(void 0, void 0, void 0, function* () {
+    //  console.log(payload);
+    // console.log(file);
+    const name = payload === null || payload === void 0 ? void 0 : payload.name;
+    const path = file === null || file === void 0 ? void 0 : file.path;
+    const carImgresult = yield (0, SendImageToCloudinary_1.SendImageCloudinary)(path, name);
+    const carImg = carImgresult === null || carImgresult === void 0 ? void 0 : carImgresult.secure_url;
+    const result = yield car_model_1.carModel.create(Object.assign(Object.assign({}, payload), { carImg }));
     return result;
 });
 // ! get all car cars from database
 const getAllCarDataFromDb = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const carQueryBuilder = car_model_1.carModel.find().sort({ status: 1 });
-    const carQuery = new Queryuilder_1.default(carQueryBuilder, query).sort();
+    const carQuery = new Queryuilder_1.default(carQueryBuilder, query);
     const result = yield carQuery.queryModel;
     return result;
 });

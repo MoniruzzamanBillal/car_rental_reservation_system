@@ -19,7 +19,9 @@ const sendResponse_1 = __importDefault(require("../../util/sendResponse"));
 const car_service_1 = require("./car.service");
 // ! create car
 const craeteCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield car_service_1.carServices.createCarIntoDB(req.body);
+    // console.log(req.body);
+    // console.log(req.file);
+    const result = yield car_service_1.carServices.createCarIntoDB(req.body, req.file);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,
         success: true,

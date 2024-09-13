@@ -10,10 +10,21 @@ import mongoose from "mongoose";
 import { CarStatus } from "./car.constant";
 import QueryBuilder from "../../builder/Queryuilder";
 import { bookingStatus } from "../booking/booking.constant";
+import { SendImageCloudinary } from "../../util/SendImageToCloudinary";
 
 // ! create car in database
-const createCarIntoDB = async (payload: TCar) => {
-  const result = await carModel.create(payload);
+const createCarIntoDB = async (payload: TCar, file: any) => {
+  //  console.log(payload);
+  // console.log(file);
+
+  const name = payload?.name;
+  const path = file?.path;
+
+  const carImgresult = await SendImageCloudinary(path, name);
+
+  const carImg = carImgresult?.secure_url;
+
+  const result = await carModel.create({ ...payload, carImg });
   return result;
 };
 

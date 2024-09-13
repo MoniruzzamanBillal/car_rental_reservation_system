@@ -150,7 +150,17 @@ const getUserBookingFromDb = async (id: string) => {
     })
     .populate("car");
 
-  return result;
+  const midifiedBooking = result.sort((a: any, b: any) => {
+    const order: Record<string, number> = {
+      pending: 1,
+      approved: 2,
+      completed: 3,
+    };
+
+    return order[a.status] - order[b.status];
+  });
+
+  return midifiedBooking;
 };
 
 // ! for changing booking status to approve

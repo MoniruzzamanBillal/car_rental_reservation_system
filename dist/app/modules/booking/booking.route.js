@@ -24,5 +24,5 @@ router.patch("/complete-booking", (0, auth_1.default)(user_constant_1.UserRole.a
 // ! approve  booking
 router.patch("/approve-booking/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.approveBooking);
 // ! cancel  booking
-router.patch("/cancel-booking/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.cancelBooking);
+router.patch("/cancel-booking/:id", (0, auth_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.user), booking_controller_1.bookingController.cancelBooking);
 exports.bookingRouter = router;

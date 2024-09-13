@@ -1,9 +1,10 @@
-import { Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import auth from "../../middleware/auth";
 import { UserRole } from "../user/user.constant";
 import validateRequest from "../../middleware/validateRequest";
 import { carValidations } from "./car.validation";
 import { carController } from "./car.controller";
+import { upload } from "../../util/SendImageToCloudinary";
 
 const router = Router();
 
@@ -11,6 +12,15 @@ const router = Router();
 router.post(
   "/",
   auth(UserRole.admin),
+  upload.single("file"),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const result = JSON.parse(req.body.data);
+    req.body = result?.car;
+
+    next();
+  },
+
   validateRequest(carValidations.createCarValidationSchema),
   carController.craeteCar
 );

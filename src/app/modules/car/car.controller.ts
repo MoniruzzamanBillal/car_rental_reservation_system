@@ -5,7 +5,10 @@ import { carServices } from "./car.service";
 
 // ! create car
 const craeteCar = catchAsync(async (req, res) => {
-  const result = await carServices.createCarIntoDB(req.body);
+  // console.log(req.body);
+  // console.log(req.file);
+
+  const result = await carServices.createCarIntoDB(req.body, req.file);
 
   sendResponse(res, {
     statusCode: 201,

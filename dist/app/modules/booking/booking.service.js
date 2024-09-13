@@ -142,7 +142,15 @@ const getUserBookingFromDb = (id) => __awaiter(void 0, void 0, void 0, function*
         select: " -password -createdAt -updatedAt -__v ",
     })
         .populate("car");
-    return result;
+    const midifiedBooking = result.sort((a, b) => {
+        const order = {
+            pending: 1,
+            approved: 2,
+            completed: 3,
+        };
+        return order[a.status] - order[b.status];
+    });
+    return midifiedBooking;
 });
 // ! for changing booking status to approve
 const approveBookingToDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -158,6 +166,14 @@ const cancelBookingToDb = (id) => __awaiter(void 0, void 0, void 0, function* ()
     const bookingData = yield booking_model_1.bookingModel.findById(id);
     if (!bookingData) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid booking data !! ");
+    }
+    //  * check if booking status is completed
+    if ((bookingData === null || bookingData === void 0 ? void 0 : bookingData.status) === booking_constant_1.bookingStatus.completed) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking is completed");
+    }
+    //  * check if booking status is cancel
+    if ((bookingData === null || bookingData === void 0 ? void 0 : bookingData.status) === booking_constant_1.bookingStatus.cancel) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking is already canceled");
     }
     const session = yield mongoose_1.default.startSession();
     try {

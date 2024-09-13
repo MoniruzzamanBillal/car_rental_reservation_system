@@ -44,11 +44,29 @@ const bookingSchema = new mongoose_1.Schema({
         required: true,
         default: booking_constant_1.bookingStatus.pending,
     },
+    payment: {
+        type: String,
+        required: true,
+        default: "pending",
+    },
     dropLocation: {
         type: String,
         required: true,
     },
+    additionalFeature: {
+        type: [String],
+    },
+    paymentMethod: {
+        type: String,
+        required: true,
+    },
 }, { timestamps: true });
+bookingSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.find({ isCanceled: { $ne: true } });
+        next();
+    });
+});
 bookingSchema.pre("find", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         this.find({ status: { $ne: booking_constant_1.bookingStatus.cancel } });
