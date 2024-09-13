@@ -357,6 +357,36 @@ const completeBooking = async (payload: TCompleteBooking) => {
   //
 };
 
+// ! for updating  booking data
+
+const updateBookingFromDb = async (id: string, payload: Partial<TBooking>) => {
+  const bookingData = await bookingModel.findById(id);
+
+  if (!bookingData) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid booking data !! ");
+  }
+
+  //  * check if booking status is completed
+  if (bookingData?.status === bookingStatus.completed) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This Booking is completed");
+  }
+
+  //  * check if booking status is cancel
+  if (bookingData?.status === bookingStatus.cancel) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This Booking is already canceled"
+    );
+  }
+
+  const result = await bookingModel.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
+
 //
 export const bookServices = {
   createBookInDb,
@@ -367,4 +397,5 @@ export const bookServices = {
   completeBooking,
   getAllCompletedBookign,
   getSpecificBookingFromDb,
+  updateBookingFromDb,
 };

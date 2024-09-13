@@ -77,6 +77,21 @@ const getBooking = catchAsync(async (req, res) => {
   });
 });
 
+// ! for updating booking data
+const updateBooking = catchAsync(async (req, res) => {
+  const result = await bookServices.updateBookingFromDb(
+    req.params.id,
+    req.body
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Booking Updated successfully ",
+    data: result,
+  });
+});
+
 // ! for approving booking  data
 const approveBooking = catchAsync(async (req, res) => {
   const result = await bookServices.approveBookingToDb(req.params.id);
@@ -127,4 +142,5 @@ export const bookingController = {
   compleatingBooking,
   getAllCompleteedBooking,
   getSpecificBooking,
+  updateBooking,
 };

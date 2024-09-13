@@ -34,6 +34,13 @@ router.get(
   bookingController.getSpecificBooking
 );
 
+// ! update booking
+router.patch(
+  "/update-booking/:id",
+  auth(UserRole.user),
+  bookingController.updateBooking
+);
+
 // ! complete booking
 router.patch(
   "/complete-booking",
