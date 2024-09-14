@@ -19,6 +19,10 @@ router.get("/", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_con
 router.get("/completed-booking", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllCompleteedBooking);
 // ! get user's booking
 router.get("/my-bookings", (0, auth_1.default)(user_constant_1.UserRole.user), booking_controller_1.bookingController.getBooking);
+// ! get specific  booking
+router.get("/single-booking/:id", (0, auth_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.user), booking_controller_1.bookingController.getSpecificBooking);
+// ! update booking
+router.patch("/update-booking/:id", (0, auth_1.default)(user_constant_1.UserRole.user), booking_controller_1.bookingController.updateBooking);
 // ! complete booking
 router.patch("/complete-booking", (0, auth_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.user), booking_controller_1.bookingController.compleatingBooking);
 // ! approve  booking

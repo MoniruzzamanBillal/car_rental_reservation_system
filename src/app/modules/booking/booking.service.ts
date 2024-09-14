@@ -319,15 +319,6 @@ const completeBooking = async (payload: TCompleteBooking) => {
   try {
     session.startTransaction();
 
-    // * update car status
-    // await carModel.findByIdAndUpdate(
-    //   carId,
-    //   {
-    //     status: CarStatus.available,
-    //   },
-    //   { new: true, upsert: true, session }
-    // );
-
     // * update end time , total cost , booking status
     const result = await bookingModel
       .findByIdAndUpdate(
@@ -358,7 +349,6 @@ const completeBooking = async (payload: TCompleteBooking) => {
 };
 
 // ! for updating  booking data
-
 const updateBookingFromDb = async (id: string, payload: Partial<TBooking>) => {
   const bookingData = await bookingModel.findById(id);
 
@@ -387,6 +377,28 @@ const updateBookingFromDb = async (id: string, payload: Partial<TBooking>) => {
   return result;
 };
 
+// ! get user booking which are completed
+const getUserCompletedBookingFromDb = async (id: string) => {
+  const result = await bookingModel
+    .find({ user: id, status: bookingStatus.completed })
+    .populate({
+      path: "user",
+      select: " -password -createdAt -updatedAt -__v ",
+    })
+    .populate("car");
+
+  const modifiedResult = result.sort((a: any, b: any) => {
+    const order: Record<string, number> = {
+      pending: 1,
+      complete: 2,
+    };
+
+    return order[a.payment] - order[b.payment];
+  });
+
+  return modifiedResult;
+};
+
 //
 export const bookServices = {
   createBookInDb,
@@ -398,4 +410,5 @@ export const bookServices = {
   getAllCompletedBookign,
   getSpecificBookingFromDb,
   updateBookingFromDb,
+  getUserCompletedBookingFromDb,
 };

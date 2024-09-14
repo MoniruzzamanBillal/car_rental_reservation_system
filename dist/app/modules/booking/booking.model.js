@@ -39,6 +39,12 @@ const bookingSchema = new mongoose_1.Schema({
         type: Number,
         required: true,
     },
+    license: {
+        type: Number,
+    },
+    nid: {
+        type: Number,
+    },
     status: {
         type: String,
         required: true,

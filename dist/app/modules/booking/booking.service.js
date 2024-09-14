@@ -152,6 +152,11 @@ const getUserBookingFromDb = (id) => __awaiter(void 0, void 0, void 0, function*
     });
     return midifiedBooking;
 });
+// ! get specific booking
+const getSpecificBookingFromDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_model_1.bookingModel.findById(id);
+    return result;
+});
 // ! for changing booking status to approve
 const approveBookingToDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const bookingData = yield booking_model_1.bookingModel.findById(id);
@@ -274,6 +279,26 @@ const completeBooking = (payload) => __awaiter(void 0, void 0, void 0, function*
     }
     //
 });
+// ! for updating  booking data
+const updateBookingFromDb = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const bookingData = yield booking_model_1.bookingModel.findById(id);
+    if (!bookingData) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid booking data !! ");
+    }
+    //  * check if booking status is completed
+    if ((bookingData === null || bookingData === void 0 ? void 0 : bookingData.status) === booking_constant_1.bookingStatus.completed) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking is completed");
+    }
+    //  * check if booking status is cancel
+    if ((bookingData === null || bookingData === void 0 ? void 0 : bookingData.status) === booking_constant_1.bookingStatus.cancel) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This Booking is already canceled");
+    }
+    const result = yield booking_model_1.bookingModel.findByIdAndUpdate(id, payload, {
+        new: true,
+        runValidators: true,
+    });
+    return result;
+});
 //
 exports.bookServices = {
     createBookInDb,
@@ -283,4 +308,6 @@ exports.bookServices = {
     cancelBookingToDb,
     completeBooking,
     getAllCompletedBookign,
+    getSpecificBookingFromDb,
+    updateBookingFromDb,
 };

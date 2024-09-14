@@ -25,11 +25,6 @@ const createBooking = catchAsync(async (req, res) => {
 const getAllBooking = catchAsync(async (req, res) => {
   const result = await bookServices.getAllBookingFromDb(req.query);
 
-  // ! if no data found
-  if (result.length <= 0) {
-    return NoDataFound(res);
-  }
-
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -120,14 +115,24 @@ const cancelBooking = catchAsync(async (req, res) => {
 const compleatingBooking = catchAsync(async (req, res) => {
   const result = await bookServices.completeBooking(req.body);
 
-  if (!result) {
-    return NoDataFound(res);
-  }
-
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "Booking completed ",
+    data: result,
+  });
+});
+
+//  ! get user completed booking
+const getUserCompletedBooking = catchAsync(async (req, res) => {
+  const result = await bookServices.getUserCompletedBookingFromDb(
+    req.user.userId
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: " user completed Bookings retrieved successfully",
     data: result,
   });
 });
@@ -143,4 +148,5 @@ export const bookingController = {
   getAllCompleteedBooking,
   getSpecificBooking,
   updateBooking,
+  getUserCompletedBooking,
 };
