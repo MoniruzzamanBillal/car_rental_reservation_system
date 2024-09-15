@@ -12,7 +12,7 @@ router.get("/all-user", auth(UserRole.admin), userControllers.getAllUser);
 // ! for getting single user
 router.get(
   "/single-user/:id",
-  auth(UserRole.admin),
+  auth(UserRole.admin, UserRole.user),
   userControllers.getSingleUser
 );
 
@@ -22,6 +22,9 @@ router.get(
   auth(UserRole.user),
   userControllers.getLoggedInUser
 );
+
+// ! update user
+router.patch("/update-user", auth(UserRole.user), userControllers.updateUser);
 
 // ! change user role
 router.patch(

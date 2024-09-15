@@ -28,7 +28,6 @@ const getSingleUser = catchAsync(async (req, res) => {
 });
 
 //! get logged in user
-
 const getLoggedInUser = catchAsync(async (req, res) => {
   const result = await userServices.getSpecificUser(req.user.userId);
 
@@ -52,10 +51,23 @@ const changeRole = catchAsync(async (req, res) => {
   });
 });
 
+//! update user data
+const updateUser = catchAsync(async (req, res) => {
+  const result = await userServices.updateUserFromDb(req.user.userId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User updated successfully",
+    data: result,
+  });
+});
+
 //
 export const userControllers = {
   getAllUser,
   getSingleUser,
   changeRole,
   getLoggedInUser,
+  updateUser,
 };

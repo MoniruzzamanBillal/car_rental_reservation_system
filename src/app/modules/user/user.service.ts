@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import AppError from "../../Error/AppError";
 import { userModel } from "./user.model";
 import { UserRole } from "./user.constant";
+import { TUser } from "./user.interface";
 
 // ! get all user from database
 const getAllUserFromDb = async () => {
@@ -54,9 +55,31 @@ const changeUserRoleFromDb = async (userId: string) => {
   return reesult;
 };
 
+// ! for updating user data
+const updateUserFromDb = async (id: string, payload: Partial<TUser>) => {
+  const isUserExist = await userModel.findById(id);
+
+  // * check if user exist in data basee
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User doesn't exist !! ");
+  }
+
+  if (isUserExist?.isBlocked) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User is blocked by admin !!! ");
+  }
+
+  const reesult = await userModel.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return reesult;
+};
+
 //
 export const userServices = {
   getAllUserFromDb,
   getSpecificUser,
   changeUserRoleFromDb,
+  updateUserFromDb,
 };
