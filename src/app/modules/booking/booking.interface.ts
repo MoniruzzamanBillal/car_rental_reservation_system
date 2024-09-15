@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 export interface TBooking {
   date: string;
   status: string;
+  transactionId: string;
   dropLocation: string;
   additionalFeature?: string[];
   payment: "complete" | "pending";

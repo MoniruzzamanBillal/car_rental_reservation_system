@@ -15,7 +15,10 @@ import { convertMinutes } from "../car/car.util";
 const createBookInDb = async (payload: Partial<TBooking>) => {
   const { carId, ...requiredData } = payload;
 
+  const trxnNumber = `TXN-${Date.now()}`;
+
   requiredData.totalCost = 0;
+  requiredData.transactionId = trxnNumber;
 
   // ! check if  user exist
   const user = await userModel.findById(payload.user);

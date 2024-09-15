@@ -8,6 +8,10 @@ const bookingSchema = new Schema<TBooking>(
       type: String,
       required: true,
     },
+    transactionId: {
+      type: String,
+      required: true,
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
