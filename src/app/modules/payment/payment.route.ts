@@ -14,5 +14,7 @@ router.post(
 
 // ! verifying payment
 router.post("/confirmation", paymentController.verifyPayment);
+// ! cancel payment
+router.post("/cancel-payment", paymentController.cancelPayment);
 
 export const paymentRouter = router;

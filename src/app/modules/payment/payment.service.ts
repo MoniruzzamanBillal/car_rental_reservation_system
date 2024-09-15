@@ -68,7 +68,7 @@ const procedePayment = async (id: string) => {
 const verifyPayment = async (transactionId: string) => {
   const verifyResult = await verifyPay(transactionId);
 
-  console.log(verifyResult);
+  // console.log(verifyResult);
 
   // const {pay_status} = verifyResult
 

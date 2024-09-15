@@ -28,9 +28,18 @@ const verifyPayment = catchAsync(async (req, res) => {
   }
 });
 
+// ! for cancel payment
+
+const cancelPayment = catchAsync(async (req, res) => {
+  return res.redirect(
+    `${redirectURL}/dashboard/user/user-payment?paymentConfirmation=Failed`
+  );
+});
+
 //
 
 export const paymentController = {
   procedePayment,
   verifyPayment,
+  cancelPayment,
 };

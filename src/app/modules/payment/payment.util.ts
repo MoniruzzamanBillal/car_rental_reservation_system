@@ -16,7 +16,7 @@ export const initiatePayment = async (paymentData: TPaymentData) => {
     store_id: config.STORE_ID,
     signature_key: config.SIGNATURE_KEY,
     success_url: `http://localhost:5000/api/payment/confirmation?transactionId=${paymentData.transactionId}`,
-    fail_url: `http://localhost:3000/api/v1/payment/confirmation?status=failed`,
+    fail_url: `http://localhost:5000/api/payment/cancel-payment`,
     cancel_url: "http://localhost:5173/",
     amount: paymentData.amount,
     currency: "BDT",
