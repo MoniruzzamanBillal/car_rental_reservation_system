@@ -27,6 +27,19 @@ const getSingleUser = catchAsync(async (req, res) => {
   });
 });
 
+//! get logged in user
+
+const getLoggedInUser = catchAsync(async (req, res) => {
+  const result = await userServices.getSpecificUser(req.user.userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User retrieved successfully",
+    data: result,
+  });
+});
+
 // ! change user role
 const changeRole = catchAsync(async (req, res) => {
   const result = await userServices.changeUserRoleFromDb(req.params.id);
@@ -44,4 +57,5 @@ export const userControllers = {
   getAllUser,
   getSingleUser,
   changeRole,
+  getLoggedInUser,
 };

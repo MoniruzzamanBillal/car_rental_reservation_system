@@ -10,11 +10,17 @@ const router = Router();
 router.get("/all-user", auth(UserRole.admin), userControllers.getAllUser);
 
 // ! for getting single user
-
 router.get(
   "/single-user/:id",
   auth(UserRole.admin),
   userControllers.getSingleUser
+);
+
+// ! for getting logged in user
+router.get(
+  "/loggedIn-user",
+  auth(UserRole.user),
+  userControllers.getLoggedInUser
 );
 
 // ! change user role
