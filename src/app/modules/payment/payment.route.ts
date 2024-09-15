@@ -5,11 +5,14 @@ import { paymentController } from "./payment.controller";
 
 const router = Router();
 
-// ! cancel  booking
+// ! for payment
 router.post(
   "/procede-payment/:id",
   auth(UserRole.user),
   paymentController.procedePayment
 );
+
+// ! verifying payment
+router.post("/confirmation", paymentController.verifyPayment);
 
 export const paymentRouter = router;

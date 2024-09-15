@@ -1,6 +1,7 @@
 import catchAsync from "../../util/catchAsync";
 import sendResponse from "../../util/sendResponse";
 import { paymentServices } from "./payment.service";
+const redirectURL = "http://localhost:5173";
 
 // ! for payment
 const procedePayment = catchAsync(async (req, res) => {
@@ -14,8 +15,22 @@ const procedePayment = catchAsync(async (req, res) => {
   });
 });
 
+// ! for verify payment
+const verifyPayment = catchAsync(async (req, res) => {
+  const { transactionId } = req.query;
+
+  const result = await paymentServices.verifyPayment(transactionId as string);
+
+  if (result) {
+    return res.redirect(`${redirectURL}/payment-success`);
+  } else {
+    throw new Error("Payment unsuccessfull");
+  }
+});
+
 //
 
 export const paymentController = {
   procedePayment,
+  verifyPayment,
 };

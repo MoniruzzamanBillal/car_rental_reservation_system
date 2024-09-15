@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import config from "../../config";
 
@@ -11,10 +12,10 @@ interface TPaymentData {
 
 export const initiatePayment = async (paymentData: TPaymentData) => {
   const result = await axios.post(process.env.PAYMENT_URL!, {
-    tran_id: `${paymentData.transactionId}${Date.now()}`,
+    tran_id: `${paymentData.transactionId}`,
     store_id: config.STORE_ID,
     signature_key: config.SIGNATURE_KEY,
-    success_url: `http://localhost:3000/api/v1/payment/confirmation?transactionId=${paymentData.transactionId}&status=success`,
+    success_url: `http://localhost:5000/api/payment/confirmation?transactionId=${paymentData.transactionId}`,
     fail_url: `http://localhost:3000/api/v1/payment/confirmation?status=failed`,
     cancel_url: "http://localhost:5173/",
     amount: paymentData.amount,
@@ -33,4 +34,23 @@ export const initiatePayment = async (paymentData: TPaymentData) => {
   });
 
   return result.data;
+};
+
+// ! for verifying payment
+export const verifyPay = async (trnxID: string) => {
+  try {
+    const result = await axios.get(config.PAYMENT_Check_URL!, {
+      params: {
+        request_id: trnxID,
+        store_id: config.STORE_ID,
+        signature_key: config.SIGNATURE_KEY,
+        type: "json",
+      },
+    });
+
+    return result?.data;
+  } catch (error: any) {
+    console.log(error);
+    throw new Error(error);
+  }
 };
