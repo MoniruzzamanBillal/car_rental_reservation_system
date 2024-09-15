@@ -28,6 +28,9 @@ router.post(
 // ! get all cars
 router.get("/", carController.getAllCar);
 
+// ! get all available cars
+router.get("/available-cars", carController.getAllAvailableCar);
+
 // ! return booking car
 router.put(
   "/return",

@@ -30,6 +30,18 @@ const getAllCar = catchAsync(async (req, res) => {
   });
 });
 
+// ! get all available car
+const getAllAvailableCar = catchAsync(async (req, res) => {
+  const result = await carServices.getAllAvailableCarDataFromDb(req.query);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "available Cars retrieved successfully",
+    data: result,
+  });
+});
+
 // ! get single car from database
 const getSingleCar = catchAsync(async (req, res) => {
   const result = await carServices.getSingleCarFromDb(req.params.id);
@@ -105,4 +117,5 @@ export const carController = {
   returnBookCar,
   updateCar,
   returnCar,
+  getAllAvailableCar,
 };

@@ -7,7 +7,7 @@ import { bookingModel } from "../booking/booking.model";
 import { userModel } from "../user/user.model";
 import { convertMinutes } from "./car.util";
 import mongoose from "mongoose";
-import { CarStatus } from "./car.constant";
+import { carSearchableFields, CarStatus } from "./car.constant";
 import QueryBuilder from "../../builder/Queryuilder";
 import { bookingStatus } from "../booking/booking.constant";
 import { SendImageCloudinary } from "../../util/SendImageToCloudinary";
@@ -33,6 +33,38 @@ const getAllCarDataFromDb = async (query: Record<string, unknown>) => {
   const carQueryBuilder = carModel.find().sort({ status: 1 });
 
   const carQuery = new QueryBuilder(carQueryBuilder, query);
+
+  const result = await carQuery.queryModel;
+
+  return result;
+};
+
+// ! get all available cars from database
+const getAllAvailableCarDataFromDb = async (query: Record<string, unknown>) => {
+  if (query?.pricePerHour) {
+    const { pricePerHour } = query;
+
+    const priceQuery = carModel.find({
+      status: CarStatus.available,
+      pricePerHour: { $lte: pricePerHour },
+    });
+
+    const queryRes = new QueryBuilder(priceQuery, query)
+      .search(carSearchableFields)
+      .filter()
+      .sort();
+
+    const result = await queryRes.queryModel;
+
+    return result;
+  }
+
+  const carQueryBuilder = carModel.find({ status: CarStatus.available });
+
+  const carQuery = new QueryBuilder(carQueryBuilder, query)
+    .search(carSearchableFields)
+    .filter()
+    .sort();
 
   const result = await carQuery.queryModel;
 
@@ -264,4 +296,5 @@ export const carServices = {
   returnBookedCar,
   updateCarFromDatabase,
   changeStatusAvailable,
+  getAllAvailableCarDataFromDb,
 };

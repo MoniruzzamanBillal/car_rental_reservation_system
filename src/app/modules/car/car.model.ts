@@ -6,6 +6,10 @@ const carSchema = new Schema<TCar, TCarModel>({
     type: String,
     required: true,
   },
+  type: {
+    type: String,
+    required: true,
+  },
   carImg: {
     type: String,
   },

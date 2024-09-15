@@ -16,6 +16,8 @@ export interface TBooking {
   totalCost: number;
   license?: number;
   nid?: number;
+  _id?: string;
+  updatedAt?: Date;
 }
 
 export interface TCompleteBooking {

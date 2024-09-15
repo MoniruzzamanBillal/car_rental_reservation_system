@@ -36,6 +36,7 @@ class QueryBuilder<T> {
       "limit",
       "page",
       "fields",
+      "pricePerHour",
     ];
 
     excludedQueryField.forEach((value) => delete queryObj[value]);

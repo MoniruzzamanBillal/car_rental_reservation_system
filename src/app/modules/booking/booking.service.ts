@@ -10,6 +10,7 @@ import { bookingModel } from "./booking.model";
 import QueryBuilder from "../../builder/Queryuilder";
 import { bookingStatus } from "./booking.constant";
 import { convertMinutes } from "../car/car.util";
+import { subDays } from "date-fns";
 
 // ! creating a booking in database
 const createBookInDb = async (payload: Partial<TBooking>) => {
@@ -406,6 +407,76 @@ const getUserCompletedBookingFromDb = async (id: string) => {
   return modifiedResult;
 };
 
+// ! get all completed payment data for showing in chart
+const getAllCompletedPaymentBookignFromDb = async (range: string) => {
+  try {
+    const today = new Date();
+    let dateRange;
+
+    if (range === "thirty") {
+      dateRange = subDays(today, 30);
+    } else if (range === "seven") {
+      dateRange = subDays(today, 7);
+    } else {
+      dateRange = subDays(today, 60);
+    }
+
+    console.log(dateRange);
+
+    const completedBookings = await bookingModel
+      .find({
+        status: { $eq: "completed" },
+        payment: { $eq: "complete" },
+        // updatedAt : {$gte :dateRange }
+      })
+      .select({
+        updatedAt: 1,
+        totalCost: 1,
+      })
+      .sort({ _id: -1 });
+
+    const formatDate = (dateString: Date) => {
+      const date = new Date(dateString);
+      const options: Intl.DateTimeFormatOptions = {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      };
+      return date.toLocaleDateString("en-GB", options).replace(/ /g, "-");
+    };
+
+    const modifiedData = completedBookings?.map((item) => ({
+      ...item.toObject(),
+      updatedAt: formatDate(item.updatedAt!),
+    }));
+
+    // *  Define the type for accumulator
+    type TAggregatedData = {
+      [date: string]: { updatedAt: string; amount: number };
+    };
+
+    const aggregatedData = modifiedData.reduce((acc: TAggregatedData, item) => {
+      const date = item.updatedAt;
+
+      if (!acc[date]) {
+        acc[date] = { updatedAt: date, amount: 0 };
+      }
+
+      acc[date].amount += item.totalCost;
+
+      console.log(acc);
+
+      return acc;
+    }, {});
+
+    const modifiedAggregatedData = Object.values(aggregatedData);
+
+    return modifiedAggregatedData;
+  } catch (error) {
+    throw new Error("Error fetching completed payment bookings: " + error);
+  }
+};
+
 //
 export const bookServices = {
   createBookInDb,
@@ -418,4 +489,5 @@ export const bookServices = {
   getSpecificBookingFromDb,
   updateBookingFromDb,
   getUserCompletedBookingFromDb,
+  getAllCompletedPaymentBookignFromDb,
 };

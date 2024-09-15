@@ -2,7 +2,8 @@ import { Model } from "mongoose";
 
 export interface TCar {
   name: string;
-  carImg?: string;
+  type: string;
+  carImg: string;
   description: string;
   color: string;
   isElectric: boolean;
