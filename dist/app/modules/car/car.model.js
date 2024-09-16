@@ -53,6 +53,10 @@ const carSchema = new mongoose_1.Schema({
         type: Number,
         required: true,
     },
+    tripCompleted: {
+        type: Number,
+        default: 0,
+    },
     isDeleted: {
         type: Boolean,
         default: false,

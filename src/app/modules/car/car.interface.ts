@@ -11,6 +11,7 @@ export interface TCar {
   features: string[];
   dropLocation: string[];
   pricePerHour: number;
+  tripCompleted: number;
   isDeleted: boolean;
 }
 

@@ -1,5 +1,7 @@
 import catchAsync from "../../util/catchAsync";
 import sendResponse from "../../util/sendResponse";
+import { bookingModel } from "../booking/booking.model";
+import { carModel } from "../car/car.model";
 import { paymentServices } from "./payment.service";
 const redirectURL = "http://localhost:5173";
 
@@ -20,6 +22,14 @@ const verifyPayment = catchAsync(async (req, res) => {
   const { transactionId } = req.query;
 
   const result = await paymentServices.verifyPayment(transactionId as string);
+
+  const bookingData = await bookingModel.findOne({ transactionId });
+
+  await carModel.findByIdAndUpdate(
+    bookingData?.car,
+    { $inc: { tripCompleted: 1 } },
+    { new: true, runValidators: true }
+  );
 
   if (result) {
     return res.redirect(`${redirectURL}/payment-success`);
