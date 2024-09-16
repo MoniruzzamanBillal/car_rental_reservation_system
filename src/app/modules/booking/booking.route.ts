@@ -40,7 +40,7 @@ router.get(
 //  ! get all completed booking revenue
 router.get(
   "/completed-payment-booking-revenue",
-  // auth(UserRole.admin),
+  auth(UserRole.admin),
   bookingController.getAllCompleteedPaymentBookingRevenue
 );
 
