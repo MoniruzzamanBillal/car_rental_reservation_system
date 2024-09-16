@@ -41,27 +41,21 @@ const getAllCarDataFromDb = async (query: Record<string, unknown>) => {
 
 // ! get all available cars from database
 const getAllAvailableCarDataFromDb = async (query: Record<string, unknown>) => {
+  let priceQuery;
+
   if (query?.pricePerHour) {
     const { pricePerHour } = query;
-
-    const priceQuery = carModel.find({
+    priceQuery = carModel.find({
       status: CarStatus.available,
       pricePerHour: { $lte: pricePerHour },
     });
-
-    const queryRes = new QueryBuilder(priceQuery, query)
-      .search(carSearchableFields)
-      .filter()
-      .sort();
-
-    const result = await queryRes.queryModel;
-
-    return result;
+  } else {
+    priceQuery = carModel.find({
+      status: CarStatus.available,
+    });
   }
 
-  const carQueryBuilder = carModel.find({ status: CarStatus.available });
-
-  const carQuery = new QueryBuilder(carQueryBuilder, query)
+  const carQuery = new QueryBuilder(priceQuery, query)
     .search(carSearchableFields)
     .filter()
     .sort();
