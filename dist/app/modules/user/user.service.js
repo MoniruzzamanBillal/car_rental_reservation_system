@@ -49,9 +49,26 @@ const changeUserRoleFromDb = (userId) => __awaiter(void 0, void 0, void 0, funct
     const reesult = yield user_model_1.userModel.findByIdAndUpdate(userId, { role: user_constant_1.UserRole.admin }, { new: true, runValidators: true });
     return reesult;
 });
+// ! for updating user data
+const updateUserFromDb = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isUserExist = yield user_model_1.userModel.findById(id);
+    // * check if user exist in data basee
+    if (!isUserExist) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "User doesn't exist !! ");
+    }
+    if (isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.isBlocked) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "User is blocked by admin !!! ");
+    }
+    const reesult = yield user_model_1.userModel.findByIdAndUpdate(id, payload, {
+        new: true,
+        runValidators: true,
+    });
+    return reesult;
+});
 //
 exports.userServices = {
     getAllUserFromDb,
     getSpecificUser,
     changeUserRoleFromDb,
+    updateUserFromDb,
 };

@@ -6,6 +6,7 @@ const auth_route_1 = require("../modules/auth/auth.route");
 const car_route_1 = require("../modules/car/car.route");
 const booking_route_1 = require("../modules/booking/booking.route");
 const user_route_1 = require("../modules/user/user.route");
+const payment_route_1 = require("../modules/payment/payment.route");
 const router = (0, express_1.Router)();
 const allRoutes = [
     {
@@ -23,6 +24,10 @@ const allRoutes = [
     {
         path: "/user",
         route: user_route_1.userRoute,
+    },
+    {
+        path: "/payment",
+        route: payment_route_1.paymentRouter,
     },
 ];
 allRoutes.map((route) => {

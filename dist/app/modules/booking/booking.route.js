@@ -17,14 +17,20 @@ router.post("/", (0, auth_1.default)(user_constant_1.UserRole.user), (0, validat
 router.get("/", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllBooking);
 //  ! get all completed booking
 router.get("/completed-booking", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllCompleteedBooking);
+//  ! get all completed booking
+router.get("/completed-payment-booking", 
+// auth(UserRole.admin),
+booking_controller_1.bookingController.getAllPaymentCompletedBooking);
 // ! get user's booking
 router.get("/my-bookings", (0, auth_1.default)(user_constant_1.UserRole.user), booking_controller_1.bookingController.getBooking);
+// ! get user's completed booking
+router.get("/my-completed-bookings", (0, auth_1.default)(user_constant_1.UserRole.user), booking_controller_1.bookingController.getUserCompletedBooking);
 // ! get specific  booking
 router.get("/single-booking/:id", (0, auth_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.user), booking_controller_1.bookingController.getSpecificBooking);
 // ! update booking
 router.patch("/update-booking/:id", (0, auth_1.default)(user_constant_1.UserRole.user), booking_controller_1.bookingController.updateBooking);
 // ! complete booking
-router.patch("/complete-booking", (0, auth_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.user), booking_controller_1.bookingController.compleatingBooking);
+router.patch("/complete-booking", (0, auth_1.default)(user_constant_1.UserRole.user), booking_controller_1.bookingController.compleatingBooking);
 // ! approve  booking
 router.patch("/approve-booking/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.approveBooking);
 // ! cancel  booking

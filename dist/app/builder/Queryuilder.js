@@ -27,6 +27,8 @@ class QueryBuilder {
             "limit",
             "page",
             "fields",
+            "pricePerHour",
+            "location",
         ];
         excludedQueryField.forEach((value) => delete queryObj[value]);
         this.queryModel = this.queryModel.find(queryObj);

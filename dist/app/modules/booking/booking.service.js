@@ -35,10 +35,13 @@ const booking_model_1 = require("./booking.model");
 const Queryuilder_1 = __importDefault(require("../../builder/Queryuilder"));
 const booking_constant_1 = require("./booking.constant");
 const car_util_1 = require("../car/car.util");
+const date_fns_1 = require("date-fns");
 // ! creating a booking in database
 const createBookInDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { carId } = payload, requiredData = __rest(payload, ["carId"]);
+    const trxnNumber = `TXN-${Date.now()}`;
     requiredData.totalCost = 0;
+    requiredData.transactionId = trxnNumber;
     // ! check if  user exist
     const user = yield user_model_1.userModel.findById(payload.user);
     if (!user) {
@@ -248,14 +251,6 @@ const completeBooking = (payload) => __awaiter(void 0, void 0, void 0, function*
     // * transaction rollback starts
     try {
         session.startTransaction();
-        // * update car status
-        // await carModel.findByIdAndUpdate(
-        //   carId,
-        //   {
-        //     status: CarStatus.available,
-        //   },
-        //   { new: true, upsert: true, session }
-        // );
         // * update end time , total cost , booking status
         const result = yield booking_model_1.bookingModel
             .findByIdAndUpdate(bookingId, {
@@ -299,6 +294,77 @@ const updateBookingFromDb = (id, payload) => __awaiter(void 0, void 0, void 0, f
     });
     return result;
 });
+// ! get user booking which are completed
+const getUserCompletedBookingFromDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_model_1.bookingModel
+        .find({ user: id, status: "completed" })
+        .populate({
+        path: "user",
+        select: " -password -createdAt -updatedAt -__v ",
+    })
+        .populate("car");
+    const successResult = result.filter((item) => (item === null || item === void 0 ? void 0 : item.status) === booking_constant_1.bookingStatus.completed);
+    const modifiedResult = successResult.sort((a, b) => {
+        const order = {
+            pending: 1,
+            complete: 2,
+        };
+        return order[a.payment] - order[b.payment];
+    });
+    return modifiedResult;
+});
+// ! get all completed payment data for showing in chart
+const getAllCompletedPaymentBookignFromDb = (range) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const today = new Date();
+        let dateRange;
+        if (range === "thirty") {
+            dateRange = (0, date_fns_1.subDays)(today, 30);
+        }
+        else if (range === "seven") {
+            dateRange = (0, date_fns_1.subDays)(today, 7);
+        }
+        else {
+            dateRange = (0, date_fns_1.subDays)(today, 60);
+        }
+        console.log(dateRange);
+        const completedBookings = yield booking_model_1.bookingModel
+            .find({
+            status: { $eq: "completed" },
+            payment: { $eq: "complete" },
+            // updatedAt : {$gte :dateRange }
+        })
+            .select({
+            updatedAt: 1,
+            totalCost: 1,
+        })
+            .sort({ _id: -1 });
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            const options = {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+            };
+            return date.toLocaleDateString("en-GB", options).replace(/ /g, "-");
+        };
+        const modifiedData = completedBookings === null || completedBookings === void 0 ? void 0 : completedBookings.map((item) => (Object.assign(Object.assign({}, item.toObject()), { updatedAt: formatDate(item.updatedAt) })));
+        const aggregatedData = modifiedData.reduce((acc, item) => {
+            const date = item.updatedAt;
+            if (!acc[date]) {
+                acc[date] = { updatedAt: date, amount: 0 };
+            }
+            acc[date].amount += item.totalCost;
+            console.log(acc);
+            return acc;
+        }, {});
+        const modifiedAggregatedData = Object.values(aggregatedData);
+        return modifiedAggregatedData;
+    }
+    catch (error) {
+        throw new Error("Error fetching completed payment bookings: " + error);
+    }
+});
 //
 exports.bookServices = {
     createBookInDb,
@@ -310,4 +376,6 @@ exports.bookServices = {
     getAllCompletedBookign,
     getSpecificBookingFromDb,
     updateBookingFromDb,
+    getUserCompletedBookingFromDb,
+    getAllCompletedPaymentBookignFromDb,
 };

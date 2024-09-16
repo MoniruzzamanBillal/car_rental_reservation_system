@@ -48,7 +48,9 @@ const getAllCompleteedBooking = catchAsync(async (req, res) => {
 const getAllPaymentCompletedBooking = catchAsync(async (req, res) => {
   const { range } = req.query;
 
-  const result = await bookServices.getAllCompletedPaymentBookignFromDb(range);
+  const result = await bookServices.getAllCompletedPaymentBookignFromDb(
+    range as string
+  );
 
   sendResponse(res, {
     statusCode: 200,
@@ -73,10 +75,6 @@ const getSpecificBooking = catchAsync(async (req, res) => {
 //  ! get user booking
 const getBooking = catchAsync(async (req, res) => {
   const result = await bookServices.getUserBookingFromDb(req.user.userId);
-
-  if (result.length <= 0) {
-    return NoDataFound(res);
-  }
 
   sendResponse(res, {
     statusCode: 200,

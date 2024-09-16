@@ -37,6 +37,16 @@ const getSingleUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
+//! get logged in user
+const getLoggedInUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.userServices.getSpecificUser(req.user.userId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "User retrieved successfully",
+        data: result,
+    });
+}));
 // ! change user role
 const changeRole = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_service_1.userServices.changeUserRoleFromDb(req.params.id);
@@ -47,9 +57,21 @@ const changeRole = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+//! update user data
+const updateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.userServices.updateUserFromDb(req.user.userId, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "User updated successfully",
+        data: result,
+    });
+}));
 //
 exports.userControllers = {
     getAllUser,
     getSingleUser,
     changeRole,
+    getLoggedInUser,
+    updateUser,
 };

@@ -47,6 +47,7 @@ const userSchema = new mongoose_1.Schema({
 // ! hash password before saving a user in database
 userSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const user = this;
         user.password = yield bcrypt_1.default.hash(user === null || user === void 0 ? void 0 : user.password, Number(config_1.default.bcrypt_salt_rounds));
         next();

@@ -48,8 +48,55 @@ const createCarIntoDB = (payload, file) => __awaiter(void 0, void 0, void 0, fun
 });
 // ! get all car cars from database
 const getAllCarDataFromDb = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const carQueryBuilder = car_model_1.carModel.find().sort({ status: 1 });
-    const carQuery = new Queryuilder_1.default(carQueryBuilder, query);
+    // console.log(query);
+    let carQueryBuilder;
+    if (query === null || query === void 0 ? void 0 : query.pricePerHour) {
+        const { pricePerHour } = query;
+        carQueryBuilder = car_model_1.carModel
+            .find({
+            pricePerHour: { $lte: pricePerHour },
+        })
+            .sort({ status: 1 });
+    }
+    else {
+        carQueryBuilder = car_model_1.carModel.find().sort({ status: 1 });
+    }
+    if (query === null || query === void 0 ? void 0 : query.location) {
+        carQueryBuilder = carQueryBuilder.find({
+            dropLocation: { $in: [query === null || query === void 0 ? void 0 : query.location] },
+        });
+    }
+    const carQuery = new Queryuilder_1.default(carQueryBuilder, query)
+        .search(car_constant_1.carSearchableFields)
+        .filter()
+        .sort();
+    const result = yield carQuery.queryModel;
+    return result;
+});
+// ! get all available cars from database
+const getAllAvailableCarDataFromDb = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    let priceQuery;
+    if (query === null || query === void 0 ? void 0 : query.pricePerHour) {
+        const { pricePerHour } = query;
+        priceQuery = car_model_1.carModel.find({
+            status: car_constant_1.CarStatus.available,
+            pricePerHour: { $lte: pricePerHour },
+        });
+    }
+    else {
+        priceQuery = car_model_1.carModel.find({
+            status: car_constant_1.CarStatus.available,
+        });
+    }
+    if (query === null || query === void 0 ? void 0 : query.location) {
+        priceQuery = priceQuery.find({
+            dropLocation: { $in: [query === null || query === void 0 ? void 0 : query.location] },
+        });
+    }
+    const carQuery = new Queryuilder_1.default(priceQuery, query)
+        .search(car_constant_1.carSearchableFields)
+        .filter()
+        .sort();
     const result = yield carQuery.queryModel;
     return result;
 });
@@ -210,4 +257,5 @@ exports.carServices = {
     returnBookedCar,
     updateCarFromDatabase,
     changeStatusAvailable,
+    getAllAvailableCarDataFromDb,
 };

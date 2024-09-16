@@ -12,7 +12,11 @@ const router = (0, express_1.Router)();
 // ! for getting all user
 router.get("/all-user", (0, auth_1.default)(user_constant_1.UserRole.admin), user_controller_1.userControllers.getAllUser);
 // ! for getting single user
-router.get("/single-user/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), user_controller_1.userControllers.getSingleUser);
+router.get("/single-user/:id", (0, auth_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.user), user_controller_1.userControllers.getSingleUser);
+// ! for getting logged in user
+router.get("/loggedIn-user", (0, auth_1.default)(user_constant_1.UserRole.user), user_controller_1.userControllers.getLoggedInUser);
+// ! update user
+router.patch("/update-user", (0, auth_1.default)(user_constant_1.UserRole.user), user_controller_1.userControllers.updateUser);
 // ! change user role
 router.patch("/change-role/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), user_controller_1.userControllers.changeRole);
 //

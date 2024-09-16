@@ -39,6 +39,16 @@ const getAllCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
         data: result,
     });
 }));
+// ! get all available car
+const getAllAvailableCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield car_service_1.carServices.getAllAvailableCarDataFromDb(req.query);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "available Cars retrieved successfully",
+        data: result,
+    });
+}));
 // ! get single car from database
 const getSingleCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield car_service_1.carServices.getSingleCarFromDb(req.params.id);
@@ -101,4 +111,5 @@ exports.carController = {
     returnBookCar,
     updateCar,
     returnCar,
+    getAllAvailableCar,
 };

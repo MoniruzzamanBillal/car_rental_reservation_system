@@ -20,6 +20,8 @@ router.post("/", (0, auth_1.default)(user_constant_1.UserRole.admin), SendImageT
 }, (0, validateRequest_1.default)(car_validation_1.carValidations.createCarValidationSchema), car_controller_1.carController.craeteCar);
 // ! get all cars
 router.get("/", car_controller_1.carController.getAllCar);
+// ! get all available cars
+router.get("/available-cars", car_controller_1.carController.getAllAvailableCar);
 // ! return booking car
 router.put("/return", (0, auth_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.user), car_controller_1.carController.returnBookCar);
 // ! get single car data

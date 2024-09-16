@@ -17,6 +17,10 @@ const bookingSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    transactionId: {
+        type: String,
+        required: true,
+    },
     user: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "User",
