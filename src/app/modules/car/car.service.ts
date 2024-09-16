@@ -30,9 +30,23 @@ const createCarIntoDB = async (payload: TCar, file: any) => {
 
 // ! get all car cars from database
 const getAllCarDataFromDb = async (query: Record<string, unknown>) => {
-  const carQueryBuilder = carModel.find().sort({ status: 1 });
+  let carQueryBuilder;
 
-  const carQuery = new QueryBuilder(carQueryBuilder, query);
+  if (query?.pricePerHour) {
+    const { pricePerHour } = query;
+    carQueryBuilder = carModel
+      .find({
+        pricePerHour: { $lte: pricePerHour },
+      })
+      .sort({ status: 1 });
+  } else {
+    carQueryBuilder = carModel.find().sort({ status: 1 });
+  }
+
+  const carQuery = new QueryBuilder(carQueryBuilder, query)
+    .search(carSearchableFields)
+    .filter()
+    .sort();
 
   const result = await carQuery.queryModel;
 
