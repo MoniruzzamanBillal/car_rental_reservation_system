@@ -133,12 +133,24 @@ const getAllCompletedBookign = async () => {
       })
       .populate({
         path: "car",
-        match: { status: { $eq: "unavailable" } },
+        select: " -description",
       });
 
-    const filterData = completedBookings.filter((booking) => booking?.car);
+    return completedBookings;
+  } catch (error) {
+    throw new Error("Error fetching completed bookings: " + error);
+  }
+};
 
-    return filterData;
+// ! get completed payment booking count   from database
+const getAllCompletedPaymentBookigCount = async () => {
+  try {
+    const completedBookings = await bookingModel.find({
+      status: { $eq: "completed" },
+      payment: { $eq: "complete" },
+    });
+
+    return completedBookings;
   } catch (error) {
     throw new Error("Error fetching completed bookings: " + error);
   }
@@ -421,13 +433,11 @@ const getAllCompletedPaymentBookignFromDb = async (range: string) => {
       dateRange = subDays(today, 60);
     }
 
-    console.log(dateRange);
-
     const completedBookings = await bookingModel
       .find({
         status: { $eq: "completed" },
         payment: { $eq: "complete" },
-        // updatedAt : {$gte :dateRange }
+        updatedAt: { $gte: dateRange },
       })
       .select({
         updatedAt: 1,
@@ -490,4 +500,5 @@ export const bookServices = {
   updateBookingFromDb,
   getUserCompletedBookingFromDb,
   getAllCompletedPaymentBookignFromDb,
+  getAllCompletedPaymentBookigCount,
 };

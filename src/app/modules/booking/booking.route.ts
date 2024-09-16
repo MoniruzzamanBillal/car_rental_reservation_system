@@ -27,8 +27,14 @@ router.get(
 //  ! get all completed booking
 router.get(
   "/completed-payment-booking",
-  // auth(UserRole.admin),
+  auth(UserRole.admin),
   bookingController.getAllPaymentCompletedBooking
+);
+//  ! get all completed booking count
+router.get(
+  "/completed-payment-booking-count",
+  // auth(UserRole.admin),
+  bookingController.getAllCompleteedPaymentBookingCount
 );
 
 // ! get user's booking

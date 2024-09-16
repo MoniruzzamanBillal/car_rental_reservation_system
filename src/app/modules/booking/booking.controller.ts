@@ -44,6 +44,18 @@ const getAllCompleteedBooking = catchAsync(async (req, res) => {
   });
 });
 
+// ! get all completed booking count
+const getAllCompleteedPaymentBookingCount = catchAsync(async (req, res) => {
+  const result = await bookServices.getAllCompletedPaymentBookigCount();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Completed payment Bookings retrieved successfully",
+    data: result?.length,
+  });
+});
+
 // ! get all payment  completed booking
 const getAllPaymentCompletedBooking = catchAsync(async (req, res) => {
   const { range } = req.query;
@@ -162,4 +174,5 @@ export const bookingController = {
   updateBooking,
   getUserCompletedBooking,
   getAllPaymentCompletedBooking,
+  getAllCompleteedPaymentBookingCount,
 };
