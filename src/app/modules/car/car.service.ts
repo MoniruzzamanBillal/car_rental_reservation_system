@@ -30,6 +30,8 @@ const createCarIntoDB = async (payload: TCar, file: any) => {
 
 // ! get all car cars from database
 const getAllCarDataFromDb = async (query: Record<string, unknown>) => {
+  // console.log(query);
+
   let carQueryBuilder;
 
   if (query?.pricePerHour) {
@@ -41,6 +43,12 @@ const getAllCarDataFromDb = async (query: Record<string, unknown>) => {
       .sort({ status: 1 });
   } else {
     carQueryBuilder = carModel.find().sort({ status: 1 });
+  }
+
+  if (query?.location) {
+    carQueryBuilder = carQueryBuilder.find({
+      dropLocation: { $in: [query?.location] },
+    });
   }
 
   const carQuery = new QueryBuilder(carQueryBuilder, query)
@@ -66,6 +74,12 @@ const getAllAvailableCarDataFromDb = async (query: Record<string, unknown>) => {
   } else {
     priceQuery = carModel.find({
       status: CarStatus.available,
+    });
+  }
+
+  if (query?.location) {
+    priceQuery = priceQuery.find({
+      dropLocation: { $in: [query?.location] },
     });
   }
 
