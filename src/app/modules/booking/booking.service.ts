@@ -474,8 +474,6 @@ const getAllCompletedPaymentBookignFromDb = async (range: string) => {
 
       acc[date].amount += item.totalCost;
 
-      console.log(acc);
-
       return acc;
     }, {});
 
@@ -484,6 +482,29 @@ const getAllCompletedPaymentBookignFromDb = async (range: string) => {
     return modifiedAggregatedData;
   } catch (error) {
     throw new Error("Error fetching completed payment bookings: " + error);
+  }
+};
+
+// ! for calculating total booking revenue of booking that payment is done
+
+const getAllCompletedPaymentBookigRevenue = async () => {
+  try {
+    const completedBookings = await bookingModel
+      .find({
+        status: { $eq: "completed" },
+        payment: { $eq: "complete" },
+      })
+      .select(" totalCost ");
+
+    const revenueData = completedBookings.reduce((acc, item) => {
+      acc += item?.totalCost;
+
+      return acc;
+    }, 0);
+
+    return revenueData;
+  } catch (error) {
+    throw new Error("Error fetching completed bookings: " + error);
   }
 };
 
@@ -501,4 +522,5 @@ export const bookServices = {
   getUserCompletedBookingFromDb,
   getAllCompletedPaymentBookignFromDb,
   getAllCompletedPaymentBookigCount,
+  getAllCompletedPaymentBookigRevenue,
 };
