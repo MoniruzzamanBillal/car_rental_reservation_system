@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
+const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../../util/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../util/sendResponse"));
 const auth_service_1 = require("./auth.service");
@@ -48,8 +49,20 @@ const signIn = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0,
         token: token,
     });
 }));
+// !send reset link to mail
+const sendResetLink = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const result = yield auth_service_1.authServices.resetMailLink((_a = req === null || req === void 0 ? void 0 : req.params) === null || _a === void 0 ? void 0 : _a.email);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Reset email sent successfully  ",
+        data: result,
+    });
+}));
 //
 exports.authController = {
     createUser,
     signIn,
+    sendResetLink,
 };

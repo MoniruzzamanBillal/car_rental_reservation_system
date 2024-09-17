@@ -76,16 +76,42 @@ const resetMailLink = async (email: string) => {
 
   const token = createToken(jwtPayload, config.jwt_secret as string, "5m");
 
-  // console.log(jwtPayload);
-  // console.log(token);
-
   const resetLink = `http://localhost:5173/reset-password/${token}`;
 
   const sendMailResponse = await sendEmail(resetLink, email);
 
-  console.log(sendMailResponse);
+  return sendMailResponse;
+};
 
-  return findUser;
+// ! for reseting password
+const resetPasswordFromDb = async (payload) => {
+  const { userId, password } = payload;
+
+  // ! check if  user exist
+  const user = await userModel.findById(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User dont exist !!! ");
+  }
+
+  if (user?.isBlocked) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User is blocked !!");
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    password,
+    Number(config.bcrypt_salt_rounds)
+  );
+
+  await userModel.findByIdAndUpdate(
+    userId,
+    {
+      password: hashedPassword,
+    },
+    { new: true }
+  );
+
+  return null;
 };
 
 //
@@ -93,4 +119,5 @@ export const authServices = {
   createUserIntoDB,
   signInFromDb,
   resetMailLink,
+  resetPasswordFromDb,
 };

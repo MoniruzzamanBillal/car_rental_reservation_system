@@ -28,8 +28,17 @@ const updateUserValidationSchema = z.object({
   }),
 });
 
+//! reset password
+const resetPasswordValidationSchema = z.object({
+  body: z.object({
+    userId: z.string().min(1, "user id is required"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+  }),
+});
+
 export const userValidations = {
   userValidationSchema,
   createUserValidationSchema,
   updateUserValidationSchema,
+  resetPasswordValidationSchema,
 };

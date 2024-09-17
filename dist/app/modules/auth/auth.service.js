@@ -19,6 +19,7 @@ const user_model_1 = require("../user/user.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = __importDefault(require("../../config"));
 const auth_util_1 = require("./auth.util");
+const SendMail_1 = require("../../util/SendMail");
 // ! create user in database
 const createUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_model_1.userModel.create(payload);
@@ -47,8 +48,33 @@ const signInFromDb = (payload) => __awaiter(void 0, void 0, void 0, function* ()
     };
     //
 });
+// ! send mail for reseting password
+const resetMailLink = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const findUser = yield user_model_1.userModel
+        .findOne({ email })
+        .select(" name email role  ");
+    if (!findUser) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "User don't exist !!");
+    }
+    if (findUser === null || findUser === void 0 ? void 0 : findUser.isBlocked) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "User is blocked !!");
+    }
+    const userId = findUser === null || findUser === void 0 ? void 0 : findUser._id.toHexString();
+    const jwtPayload = {
+        userId,
+        userRole: findUser === null || findUser === void 0 ? void 0 : findUser.role,
+    };
+    const token = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_secret, "5m");
+    // console.log(jwtPayload);
+    // console.log(token);
+    const resetLink = `http://localhost:5173/reset-password/${token}`;
+    const sendMailResponse = yield (0, SendMail_1.sendEmail)(resetLink, email);
+    console.log(sendMailResponse);
+    return findUser;
+});
 //
 exports.authServices = {
     createUserIntoDB,
     signInFromDb,
+    resetMailLink,
 };
