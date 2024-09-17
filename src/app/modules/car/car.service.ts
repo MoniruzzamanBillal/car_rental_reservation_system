@@ -247,15 +247,6 @@ const returnBookedCar = async (payload: TReturnCar) => {
   try {
     session.startTransaction();
 
-    // * update car status
-    // await carModel.findByIdAndUpdate(
-    //   carId,
-    //   {
-    //     status: CarStatus.available,
-    //   },
-    //   { new: true, upsert: true, session }
-    // );
-
     // * update end time and total cost
     const result = await bookingModel
       .findByIdAndUpdate(
@@ -286,9 +277,14 @@ const returnBookedCar = async (payload: TReturnCar) => {
 };
 
 // ! changing car status to available
-const changeStatusAvailable = async (id: string) => {
+const changeStatusAvailable = async (payload: {
+  carId: string;
+  bookId: string;
+}) => {
+  const { carId, bookId } = payload;
+
   // * check if car is exist
-  const car = await carModel.findById(id);
+  const car = await carModel.findById(carId);
   if (!car) {
     throw new AppError(httpStatus.BAD_REQUEST, "This car don't exist");
   }
@@ -297,16 +293,42 @@ const changeStatusAvailable = async (id: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "This car is deleted ");
   }
 
-  // * update car status
-  const result = await carModel.findByIdAndUpdate(
-    id,
-    {
-      status: CarStatus.available,
-    },
-    { new: true, upsert: true }
-  );
+  const bookingData = await bookingModel.findById(bookId);
 
-  return result;
+  // * check id booking data exist
+  if (!bookingData) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid booking data !! ");
+  }
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    // * update carstatus in booking data
+    await bookingModel.findByIdAndUpdate(
+      bookId,
+      { carStatus: CarStatus.available },
+      { new: true, runValidators: true, session }
+    );
+
+    // * update car status
+    const result = await carModel.findByIdAndUpdate(
+      carId,
+      {
+        status: CarStatus.available,
+      },
+      { new: true, upsert: true, session }
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+    return result;
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(error);
+  }
 };
 
 //

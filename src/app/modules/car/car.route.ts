@@ -53,7 +53,7 @@ router.put(
 );
 
 // ! return car / change car status
-router.patch("/return-car/:id", auth(UserRole.admin), carController.returnCar);
+router.patch("/return-car", auth(UserRole.admin), carController.returnCar);
 
 //
 
