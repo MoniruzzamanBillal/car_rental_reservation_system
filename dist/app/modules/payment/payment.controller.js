@@ -18,7 +18,7 @@ const sendResponse_1 = __importDefault(require("../../util/sendResponse"));
 const booking_model_1 = require("../booking/booking.model");
 const car_model_1 = require("../car/car.model");
 const payment_service_1 = require("./payment.service");
-const redirectURL = "http://localhost:5173";
+const redirectURL = "https://rent-ride-ivory.vercel.app";
 // ! for payment
 const procedePayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield payment_service_1.paymentServices.procedePayment(req.params.id);

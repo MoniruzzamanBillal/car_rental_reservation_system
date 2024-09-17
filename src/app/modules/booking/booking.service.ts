@@ -142,6 +142,25 @@ const getAllCompletedBookign = async () => {
   }
 };
 
+// ! get all completed booking but car status unavailable
+const getCompletedBookingUnavailableCar = async () => {
+  const result = await bookingModel
+    .find({
+      status: { $eq: "completed" },
+      carStatus: { $eq: CarStatus.unavailable },
+    })
+    .populate({
+      path: "user",
+      select: " -password -createdAt -updatedAt -__v ",
+    })
+    .populate({
+      path: "car",
+      select: " -description",
+    });
+
+  return result;
+};
+
 // ! get completed payment booking count   from database
 const getAllCompletedPaymentBookigCount = async () => {
   try {
@@ -443,7 +462,7 @@ const getAllCompletedPaymentBookignFromDb = async (range: string) => {
         updatedAt: 1,
         totalCost: 1,
       })
-      .sort({ _id: -1 });
+      .sort({ updatedAt: -1 });
 
     const formatDate = (dateString: Date) => {
       const date = new Date(dateString);
@@ -523,4 +542,5 @@ export const bookServices = {
   getAllCompletedPaymentBookignFromDb,
   getAllCompletedPaymentBookigCount,
   getAllCompletedPaymentBookigRevenue,
+  getCompletedBookingUnavailableCar,
 };

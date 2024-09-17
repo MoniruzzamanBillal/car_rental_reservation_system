@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { TBooking } from "./booking.interface";
 import { bookingStatus } from "./booking.constant";
+import { CarStatus } from "../car/car.constant";
 
 const bookingSchema = new Schema<TBooking>(
   {
@@ -60,6 +61,11 @@ const bookingSchema = new Schema<TBooking>(
     paymentMethod: {
       type: String,
       required: true,
+    },
+    carStatus: {
+      type: String,
+      required: true,
+      default: CarStatus.unavailable,
     },
   },
   { timestamps: true }

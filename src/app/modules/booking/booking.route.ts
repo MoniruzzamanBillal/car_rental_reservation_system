@@ -24,7 +24,14 @@ router.get(
   bookingController.getAllCompleteedBooking
 );
 
-//  ! get all completed booking
+//  ! get all completed booking unavailable car
+router.get(
+  "/completed-booking-unavailable-car",
+  auth(UserRole.admin),
+  bookingController.getAllCompleteedBookingUnavailableCar
+);
+
+//  ! get all completed payment booking
 router.get(
   "/completed-payment-booking",
   auth(UserRole.admin),

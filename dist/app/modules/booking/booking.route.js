@@ -18,9 +18,11 @@ router.get("/", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_con
 //  ! get all completed booking
 router.get("/completed-booking", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllCompleteedBooking);
 //  ! get all completed booking
-router.get("/completed-payment-booking", 
-// auth(UserRole.admin),
-booking_controller_1.bookingController.getAllPaymentCompletedBooking);
+router.get("/completed-payment-booking", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllPaymentCompletedBooking);
+//  ! get all completed booking count
+router.get("/completed-payment-booking-count", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllCompleteedPaymentBookingCount);
+//  ! get all completed booking revenue
+router.get("/completed-payment-booking-revenue", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllCompleteedPaymentBookingRevenue);
 // ! get user's booking
 router.get("/my-bookings", (0, auth_1.default)(user_constant_1.UserRole.user), booking_controller_1.bookingController.getBooking);
 // ! get user's completed booking

@@ -50,6 +50,16 @@ const getAllCompleteedBooking = (0, catchAsync_1.default)((req, res) => __awaite
         data: result,
     });
 }));
+// ! get all completed booking count
+const getAllCompleteedPaymentBookingCount = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_service_1.bookServices.getAllCompletedPaymentBookigCount();
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Completed payment Bookings retrieved successfully",
+        data: result === null || result === void 0 ? void 0 : result.length,
+    });
+}));
 // ! get all payment  completed booking
 const getAllPaymentCompletedBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { range } = req.query;
@@ -131,6 +141,16 @@ const getUserCompletedBooking = (0, catchAsync_1.default)((req, res) => __awaite
         data: result,
     });
 }));
+// ! get all completed booking count
+const getAllCompleteedPaymentBookingRevenue = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_service_1.bookServices.getAllCompletedPaymentBookigRevenue();
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Completed payment Bookings retrieved successfully",
+        data: result,
+    });
+}));
 //
 exports.bookingController = {
     createBooking,
@@ -144,4 +164,6 @@ exports.bookingController = {
     updateBooking,
     getUserCompletedBooking,
     getAllPaymentCompletedBooking,
+    getAllCompleteedPaymentBookingCount,
+    getAllCompleteedPaymentBookingRevenue,
 };

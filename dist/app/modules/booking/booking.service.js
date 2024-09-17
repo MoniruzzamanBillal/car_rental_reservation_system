@@ -127,10 +127,22 @@ const getAllCompletedBookign = () => __awaiter(void 0, void 0, void 0, function*
         })
             .populate({
             path: "car",
-            match: { status: { $eq: "unavailable" } },
+            select: " -description",
         });
-        const filterData = completedBookings.filter((booking) => booking === null || booking === void 0 ? void 0 : booking.car);
-        return filterData;
+        return completedBookings;
+    }
+    catch (error) {
+        throw new Error("Error fetching completed bookings: " + error);
+    }
+});
+// ! get completed payment booking count   from database
+const getAllCompletedPaymentBookigCount = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const completedBookings = yield booking_model_1.bookingModel.find({
+            status: { $eq: "completed" },
+            payment: { $eq: "complete" },
+        });
+        return completedBookings;
     }
     catch (error) {
         throw new Error("Error fetching completed bookings: " + error);
@@ -327,18 +339,17 @@ const getAllCompletedPaymentBookignFromDb = (range) => __awaiter(void 0, void 0,
         else {
             dateRange = (0, date_fns_1.subDays)(today, 60);
         }
-        console.log(dateRange);
         const completedBookings = yield booking_model_1.bookingModel
             .find({
             status: { $eq: "completed" },
             payment: { $eq: "complete" },
-            // updatedAt : {$gte :dateRange }
+            updatedAt: { $gte: dateRange },
         })
             .select({
             updatedAt: 1,
             totalCost: 1,
         })
-            .sort({ _id: -1 });
+            .sort({ updatedAt: -1 });
         const formatDate = (dateString) => {
             const date = new Date(dateString);
             const options = {
@@ -355,7 +366,6 @@ const getAllCompletedPaymentBookignFromDb = (range) => __awaiter(void 0, void 0,
                 acc[date] = { updatedAt: date, amount: 0 };
             }
             acc[date].amount += item.totalCost;
-            console.log(acc);
             return acc;
         }, {});
         const modifiedAggregatedData = Object.values(aggregatedData);
@@ -363,6 +373,25 @@ const getAllCompletedPaymentBookignFromDb = (range) => __awaiter(void 0, void 0,
     }
     catch (error) {
         throw new Error("Error fetching completed payment bookings: " + error);
+    }
+});
+// ! for calculating total booking revenue of booking that payment is done
+const getAllCompletedPaymentBookigRevenue = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const completedBookings = yield booking_model_1.bookingModel
+            .find({
+            status: { $eq: "completed" },
+            payment: { $eq: "complete" },
+        })
+            .select(" totalCost ");
+        const revenueData = completedBookings.reduce((acc, item) => {
+            acc += item === null || item === void 0 ? void 0 : item.totalCost;
+            return acc;
+        }, 0);
+        return revenueData;
+    }
+    catch (error) {
+        throw new Error("Error fetching completed bookings: " + error);
     }
 });
 //
@@ -378,4 +407,6 @@ exports.bookServices = {
     updateBookingFromDb,
     getUserCompletedBookingFromDb,
     getAllCompletedPaymentBookignFromDb,
+    getAllCompletedPaymentBookigCount,
+    getAllCompletedPaymentBookigRevenue,
 };

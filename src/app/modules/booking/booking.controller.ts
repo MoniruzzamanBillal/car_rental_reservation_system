@@ -44,6 +44,18 @@ const getAllCompleteedBooking = catchAsync(async (req, res) => {
   });
 });
 
+// ! get all completed booking unavailable car data
+const getAllCompleteedBookingUnavailableCar = catchAsync(async (req, res) => {
+  const result = await bookServices.getCompletedBookingUnavailableCar();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Completed Bookings unavailable car data retrieved successfully",
+    data: result,
+  });
+});
+
 // ! get all completed booking count
 const getAllCompleteedPaymentBookingCount = catchAsync(async (req, res) => {
   const result = await bookServices.getAllCompletedPaymentBookigCount();
@@ -56,7 +68,7 @@ const getAllCompleteedPaymentBookingCount = catchAsync(async (req, res) => {
   });
 });
 
-// ! get all payment  completed booking
+// ! get all payment  completed booking for chart
 const getAllPaymentCompletedBooking = catchAsync(async (req, res) => {
   const { range } = req.query;
 
@@ -188,4 +200,5 @@ export const bookingController = {
   getAllPaymentCompletedBooking,
   getAllCompleteedPaymentBookingCount,
   getAllCompleteedPaymentBookingRevenue,
+  getAllCompleteedBookingUnavailableCar,
 };

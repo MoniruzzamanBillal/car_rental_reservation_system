@@ -3,7 +3,7 @@ import sendResponse from "../../util/sendResponse";
 import { bookingModel } from "../booking/booking.model";
 import { carModel } from "../car/car.model";
 import { paymentServices } from "./payment.service";
-const redirectURL = "http://localhost:5173";
+const redirectURL = "https://rent-ride-ivory.vercel.app";
 
 // ! for payment
 const procedePayment = catchAsync(async (req, res) => {

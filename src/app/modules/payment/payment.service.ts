@@ -5,7 +5,6 @@ import { bookingStatus } from "../booking/booking.constant";
 import { userModel } from "../user/user.model";
 import { carModel } from "../car/car.model";
 import { initiatePayment, verifyPay } from "./payment.util";
-import { handleDuplicateError } from "./../../Error/handleDuplicateError";
 
 // ! for payament
 const procedePayment = async (id: string) => {
@@ -67,10 +66,6 @@ const procedePayment = async (id: string) => {
 // ! for verifying payment
 const verifyPayment = async (transactionId: string) => {
   const verifyResult = await verifyPay(transactionId);
-
-  // console.log(verifyResult);
-
-  // const {pay_status} = verifyResult
 
   if (verifyResult && verifyResult?.pay_status === "Successful") {
     await bookingModel.findOneAndUpdate(

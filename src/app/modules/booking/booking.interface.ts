@@ -12,6 +12,7 @@ export interface TBooking {
   car: Types.ObjectId;
   carId: Types.ObjectId;
   startTime: string;
+  carStatus: string;
   endTime: string | null;
   totalCost: number;
   license?: number;
