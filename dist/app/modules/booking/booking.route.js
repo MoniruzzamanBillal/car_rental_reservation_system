@@ -17,7 +17,9 @@ router.post("/", (0, auth_1.default)(user_constant_1.UserRole.user), (0, validat
 router.get("/", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllBooking);
 //  ! get all completed booking
 router.get("/completed-booking", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllCompleteedBooking);
-//  ! get all completed booking
+//  ! get all completed booking unavailable car
+router.get("/completed-booking-unavailable-car", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllCompleteedBookingUnavailableCar);
+//  ! get all completed payment booking
 router.get("/completed-payment-booking", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllPaymentCompletedBooking);
 //  ! get all completed booking count
 router.get("/completed-payment-booking-count", (0, auth_1.default)(user_constant_1.UserRole.admin), booking_controller_1.bookingController.getAllCompleteedPaymentBookingCount);

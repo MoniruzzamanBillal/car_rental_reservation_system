@@ -42,6 +42,7 @@ const createBookInDb = (payload) => __awaiter(void 0, void 0, void 0, function* 
     const trxnNumber = `TXN-${Date.now()}`;
     requiredData.totalCost = 0;
     requiredData.transactionId = trxnNumber;
+    // requiredData.carStatus = CarStatus.unavailable;
     // ! check if  user exist
     const user = yield user_model_1.userModel.findById(payload.user);
     if (!user) {
@@ -134,6 +135,23 @@ const getAllCompletedBookign = () => __awaiter(void 0, void 0, void 0, function*
     catch (error) {
         throw new Error("Error fetching completed bookings: " + error);
     }
+});
+// ! get all completed booking but car status unavailable
+const getCompletedBookingUnavailableCar = () => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_model_1.bookingModel
+        .find({
+        status: { $eq: "completed" },
+        carStatus: { $eq: car_constant_1.CarStatus.unavailable },
+    })
+        .populate({
+        path: "user",
+        select: " -password -createdAt -updatedAt -__v ",
+    })
+        .populate({
+        path: "car",
+        select: " -description",
+    });
+    return result;
 });
 // ! get completed payment booking count   from database
 const getAllCompletedPaymentBookigCount = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -409,4 +427,5 @@ exports.bookServices = {
     getAllCompletedPaymentBookignFromDb,
     getAllCompletedPaymentBookigCount,
     getAllCompletedPaymentBookigRevenue,
+    getCompletedBookingUnavailableCar,
 };

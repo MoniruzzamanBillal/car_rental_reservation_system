@@ -50,6 +50,16 @@ const getAllCompleteedBooking = (0, catchAsync_1.default)((req, res) => __awaite
         data: result,
     });
 }));
+// ! get all completed booking unavailable car data
+const getAllCompleteedBookingUnavailableCar = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_service_1.bookServices.getCompletedBookingUnavailableCar();
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "Completed Bookings unavailable car data retrieved successfully",
+        data: result,
+    });
+}));
 // ! get all completed booking count
 const getAllCompleteedPaymentBookingCount = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield booking_service_1.bookServices.getAllCompletedPaymentBookigCount();
@@ -60,7 +70,7 @@ const getAllCompleteedPaymentBookingCount = (0, catchAsync_1.default)((req, res)
         data: result === null || result === void 0 ? void 0 : result.length,
     });
 }));
-// ! get all payment  completed booking
+// ! get all payment  completed booking for chart
 const getAllPaymentCompletedBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { range } = req.query;
     const result = yield booking_service_1.bookServices.getAllCompletedPaymentBookignFromDb(range);
@@ -166,4 +176,5 @@ exports.bookingController = {
     getAllPaymentCompletedBooking,
     getAllCompleteedPaymentBookingCount,
     getAllCompleteedPaymentBookingRevenue,
+    getAllCompleteedBookingUnavailableCar,
 };

@@ -20,6 +20,7 @@ const createBookInDb = async (payload: Partial<TBooking>) => {
 
   requiredData.totalCost = 0;
   requiredData.transactionId = trxnNumber;
+  // requiredData.carStatus = CarStatus.unavailable;
 
   // ! check if  user exist
   const user = await userModel.findById(payload.user);

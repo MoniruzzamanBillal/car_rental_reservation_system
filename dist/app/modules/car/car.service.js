@@ -200,14 +200,6 @@ const returnBookedCar = (payload) => __awaiter(void 0, void 0, void 0, function*
     // * transaction rollback starts
     try {
         session.startTransaction();
-        // * update car status
-        // await carModel.findByIdAndUpdate(
-        //   carId,
-        //   {
-        //     status: CarStatus.available,
-        //   },
-        //   { new: true, upsert: true, session }
-        // );
         // * update end time and total cost
         const result = yield booking_model_1.bookingModel
             .findByIdAndUpdate(bookingId, {
@@ -232,9 +224,10 @@ const returnBookedCar = (payload) => __awaiter(void 0, void 0, void 0, function*
     //
 });
 // ! changing car status to available
-const changeStatusAvailable = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const changeStatusAvailable = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { carId, bookId } = payload;
     // * check if car is exist
-    const car = yield car_model_1.carModel.findById(id);
+    const car = yield car_model_1.carModel.findById(carId);
     if (!car) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "This car don't exist");
     }
@@ -242,11 +235,29 @@ const changeStatusAvailable = (id) => __awaiter(void 0, void 0, void 0, function
     if (car.isDeleted) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "This car is deleted ");
     }
-    // * update car status
-    const result = yield car_model_1.carModel.findByIdAndUpdate(id, {
-        status: car_constant_1.CarStatus.available,
-    }, { new: true, upsert: true });
-    return result;
+    const bookingData = yield booking_model_1.bookingModel.findById(bookId);
+    // * check id booking data exist
+    if (!bookingData) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid booking data !! ");
+    }
+    const session = yield mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        // * update carstatus in booking data
+        yield booking_model_1.bookingModel.findByIdAndUpdate(bookId, { carStatus: car_constant_1.CarStatus.available }, { new: true, runValidators: true, session });
+        // * update car status
+        const result = yield car_model_1.carModel.findByIdAndUpdate(carId, {
+            status: car_constant_1.CarStatus.available,
+        }, { new: true, upsert: true, session });
+        yield session.commitTransaction();
+        yield session.endSession();
+        return result;
+    }
+    catch (error) {
+        yield session.abortTransaction();
+        yield session.endSession();
+        throw new Error(error);
+    }
 });
 //
 exports.carServices = {

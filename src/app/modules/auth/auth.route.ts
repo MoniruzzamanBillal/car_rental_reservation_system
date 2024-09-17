@@ -6,6 +6,9 @@ import { authValidations } from "./auth.validation";
 
 const router = Router();
 
+// ! for sending reset link to email
+router.get("/reset-link/:email", authController.sendResetLink);
+
 // ! signup new user
 router.post(
   "/signup",

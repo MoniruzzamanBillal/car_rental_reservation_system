@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookingModel = void 0;
 const mongoose_1 = require("mongoose");
 const booking_constant_1 = require("./booking.constant");
+const car_constant_1 = require("../car/car.constant");
 const bookingSchema = new mongoose_1.Schema({
     date: {
         type: String,
@@ -69,6 +70,11 @@ const bookingSchema = new mongoose_1.Schema({
     paymentMethod: {
         type: String,
         required: true,
+    },
+    carStatus: {
+        type: String,
+        required: true,
+        default: car_constant_1.CarStatus.unavailable,
     },
 }, { timestamps: true });
 bookingSchema.pre("find", function (next) {

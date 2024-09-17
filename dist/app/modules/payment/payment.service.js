@@ -64,8 +64,6 @@ const procedePayment = (id) => __awaiter(void 0, void 0, void 0, function* () {
 // ! for verifying payment
 const verifyPayment = (transactionId) => __awaiter(void 0, void 0, void 0, function* () {
     const verifyResult = yield (0, payment_util_1.verifyPay)(transactionId);
-    // console.log(verifyResult);
-    // const {pay_status} = verifyResult
     if (verifyResult && (verifyResult === null || verifyResult === void 0 ? void 0 : verifyResult.pay_status) === "Successful") {
         yield booking_model_1.bookingModel.findOneAndUpdate({ transactionId }, {
             payment: "complete",

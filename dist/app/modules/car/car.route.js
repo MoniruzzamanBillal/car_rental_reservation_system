@@ -31,6 +31,6 @@ router.delete("/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), car_c
 // ! update car
 router.put("/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), (0, validateRequest_1.default)(car_validation_1.carValidations.updateCarValidationSchema), car_controller_1.carController.updateCar);
 // ! return car / change car status
-router.patch("/return-car/:id", (0, auth_1.default)(user_constant_1.UserRole.admin), car_controller_1.carController.returnCar);
+router.patch("/return-car", (0, auth_1.default)(user_constant_1.UserRole.admin), car_controller_1.carController.returnCar);
 //
 exports.carRouter = router;
