@@ -84,7 +84,10 @@ const resetMailLink = async (email: string) => {
 };
 
 // ! for reseting password
-const resetPasswordFromDb = async (payload) => {
+const resetPasswordFromDb = async (payload: {
+  userId: string;
+  password: string;
+}) => {
   const { userId, password } = payload;
 
   // ! check if  user exist
