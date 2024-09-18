@@ -65,16 +65,31 @@ const resetMailLink = (email) => __awaiter(void 0, void 0, void 0, function* () 
         userRole: findUser === null || findUser === void 0 ? void 0 : findUser.role,
     };
     const token = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_secret, "5m");
-    // console.log(jwtPayload);
-    // console.log(token);
-    const resetLink = `http://localhost:5173/reset-password/${token}`;
+    const resetLink = `https://rent-ride-ivory.vercel.app/reset-password/${token}`;
     const sendMailResponse = yield (0, SendMail_1.sendEmail)(resetLink, email);
-    console.log(sendMailResponse);
-    return findUser;
+    return sendMailResponse;
+});
+// ! for reseting password
+const resetPasswordFromDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId, password } = payload;
+    // ! check if  user exist
+    const user = yield user_model_1.userModel.findById(userId);
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "User dont exist !!! ");
+    }
+    if (user === null || user === void 0 ? void 0 : user.isBlocked) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "User is blocked !!");
+    }
+    const hashedPassword = yield bcrypt_1.default.hash(password, Number(config_1.default.bcrypt_salt_rounds));
+    yield user_model_1.userModel.findByIdAndUpdate(userId, {
+        password: hashedPassword,
+    }, { new: true });
+    return null;
 });
 //
 exports.authServices = {
     createUserIntoDB,
     signInFromDb,
     resetMailLink,
+    resetPasswordFromDb,
 };

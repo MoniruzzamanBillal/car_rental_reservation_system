@@ -4,6 +4,7 @@ import { bookingModel } from "../booking/booking.model";
 import { carModel } from "../car/car.model";
 import { paymentServices } from "./payment.service";
 const redirectURL = "https://rent-ride-ivory.vercel.app";
+// const redirectURL = "http://localhost:5173";
 
 // ! for payment
 const procedePayment = catchAsync(async (req, res) => {
@@ -32,7 +33,7 @@ const verifyPayment = catchAsync(async (req, res) => {
   );
 
   if (result) {
-    return res.redirect(`${redirectURL}/payment-success`);
+    return res.redirect(`${redirectURL}/payment-success/${bookingData?._id}`);
   } else {
     throw new Error("Payment unsuccessfull");
   }

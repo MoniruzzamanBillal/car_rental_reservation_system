@@ -187,7 +187,13 @@ const getUserBookingFromDb = (id) => __awaiter(void 0, void 0, void 0, function*
 });
 // ! get specific booking
 const getSpecificBookingFromDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield booking_model_1.bookingModel.findById(id);
+    const result = yield booking_model_1.bookingModel
+        .findById(id)
+        .populate({
+        path: "user",
+        select: " -password -createdAt  -updatedAt -__v -role  ",
+    })
+        .populate("car");
     return result;
 });
 // ! for changing booking status to approve
@@ -367,7 +373,7 @@ const getAllCompletedPaymentBookignFromDb = (range) => __awaiter(void 0, void 0,
             updatedAt: 1,
             totalCost: 1,
         })
-            .sort({ updatedAt: -1 });
+            .sort({ _id: -1 });
         const formatDate = (dateString) => {
             const date = new Date(dateString);
             const options = {

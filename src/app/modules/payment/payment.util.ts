@@ -10,6 +10,9 @@ interface TPaymentData {
   customerPhone: string;
 }
 
+// http://localhost:5000
+// https://car-rental-reservation-system-beta.vercel.app
+
 export const initiatePayment = async (paymentData: TPaymentData) => {
   const result = await axios.post(process.env.PAYMENT_URL!, {
     tran_id: `${paymentData.transactionId}`,

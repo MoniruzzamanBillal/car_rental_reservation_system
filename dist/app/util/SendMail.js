@@ -27,7 +27,7 @@ const sendEmail = (resetPasswordLink, receiverMail) => __awaiter(void 0, void 0,
     const response = yield transporter.sendMail({
         from: "mdmoniruzzamanbillal2@gmail.com", // sender address
         to: receiverMail, // list of receivers
-        subject: "Reset your password within ten mins!",
+        subject: "Reset your password within 5 mins!",
         text: "", // plain text body
         html: resetPasswordLink,
     });

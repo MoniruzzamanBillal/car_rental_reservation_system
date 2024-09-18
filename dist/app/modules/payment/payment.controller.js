@@ -19,6 +19,7 @@ const booking_model_1 = require("../booking/booking.model");
 const car_model_1 = require("../car/car.model");
 const payment_service_1 = require("./payment.service");
 const redirectURL = "https://rent-ride-ivory.vercel.app";
+// const redirectURL = "http://localhost:5173";
 // ! for payment
 const procedePayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield payment_service_1.paymentServices.procedePayment(req.params.id);
@@ -36,7 +37,7 @@ const verifyPayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     const bookingData = yield booking_model_1.bookingModel.findOne({ transactionId });
     yield car_model_1.carModel.findByIdAndUpdate(bookingData === null || bookingData === void 0 ? void 0 : bookingData.car, { $inc: { tripCompleted: 1 } }, { new: true, runValidators: true });
     if (result) {
-        return res.redirect(`${redirectURL}/payment-success`);
+        return res.redirect(`${redirectURL}/payment-success/${bookingData === null || bookingData === void 0 ? void 0 : bookingData._id}`);
     }
     else {
         throw new Error("Payment unsuccessfull");

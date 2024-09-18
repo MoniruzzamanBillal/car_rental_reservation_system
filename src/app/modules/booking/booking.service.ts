@@ -201,7 +201,13 @@ const getUserBookingFromDb = async (id: string) => {
 
 // ! get specific booking
 const getSpecificBookingFromDb = async (id: string) => {
-  const result = await bookingModel.findById(id);
+  const result = await bookingModel
+    .findById(id)
+    .populate({
+      path: "user",
+      select: " -password -createdAt  -updatedAt -__v -role  ",
+    })
+    .populate("car");
 
   return result;
 };
@@ -463,7 +469,7 @@ const getAllCompletedPaymentBookignFromDb = async (range: string) => {
         updatedAt: 1,
         totalCost: 1,
       })
-      .sort({ updatedAt: -1 });
+      .sort({ _id: -1 });
 
     const formatDate = (dateString: Date) => {
       const date = new Date(dateString);

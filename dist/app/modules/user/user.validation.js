@@ -27,8 +27,16 @@ const updateUserValidationSchema = zod_1.z.object({
         phone: zod_1.z.string().optional(),
     }),
 });
+//! reset password
+const resetPasswordValidationSchema = zod_1.z.object({
+    body: zod_1.z.object({
+        userId: zod_1.z.string().min(1, "user id is required"),
+        password: zod_1.z.string().min(6, "Password must be at least 6 characters long"),
+    }),
+});
 exports.userValidations = {
     userValidationSchema,
     createUserValidationSchema,
     updateUserValidationSchema,
+    resetPasswordValidationSchema,
 };

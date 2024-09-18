@@ -16,6 +16,8 @@ exports.verifyPay = exports.initiatePayment = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const axios_1 = __importDefault(require("axios"));
 const config_1 = __importDefault(require("../../config"));
+// http://localhost:5000
+// https://car-rental-reservation-system-beta.vercel.app
 const initiatePayment = (paymentData) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield axios_1.default.post(process.env.PAYMENT_URL, {
         tran_id: `${paymentData.transactionId}`,
